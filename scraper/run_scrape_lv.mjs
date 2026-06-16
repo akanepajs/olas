@@ -1,18 +1,22 @@
 // Latvian retailer egg-listing scrape runner. Mirrors run_scrape.mjs (Spain) but
-// targets Latvian chains and adds a national-anchor cage-free metric.
+// targets Latvian chains, adds a national-anchor cage-free metric, per-egg
+// pricing, and a weekly time-series history.
 //
 // Coverage: Rimi and Barbora (Maxima) are the two large Latvian online grocers
 // with machine-readable catalogues. top!, Lidl, Mego and Elvi have no scrapable
-// online egg catalogue (SPA-API / no online store / no shoppable listings) and
-// return external_only stubs so the figure shows coverage honestly.
+// online egg catalogue and return external_only stubs.
 //
 // Each SKU is classified by EU production code (0 organic, 1 free-range, 2 barn,
-// 3 caged, or unknown) via lib/classify.mjs. Two cage-free shares per retailer:
-//   strict  = cage-free / all shell-egg SKUs        (unknowns count as not-cage-free)
-//   anchor  = (cage-free + unknown*ANCHOR) / all     (unknowns weighted by the
-//             national cage-free share, the Latvian analogue of Spain's 33%)
+// 3 caged, or unknown) via lib/classify.mjs. Per-retailer outputs:
+//   strict cage-free %  = cage-free / all shell-egg SKUs
+//   anchor cage-free %  = (cage-free + unknown*ANCHOR) / all shell-egg SKUs
+//   median price/egg    = median of (pack price / eggs per pack) over shell eggs
+//
+// Usage: node run_scrape_lv.mjs [tag] [run-date YYYY-MM-DD]
+//   tag      defaults to <year>-Q<quarter>-LV (drives the current-snapshot files)
+//   run-date defaults to today (the dated row appended to the history series)
 
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, writeFile, readFile } from "node:fs/promises";
 
 import { classify, isShellEgg, codeLabel, isCageFree } from "./lib/classify.mjs";
 import { scrape as scrapeRimi }    from "./lib/retailers/rimi.mjs";
@@ -24,14 +28,30 @@ import { scrape as scrapeElvi }    from "./lib/retailers/elvi.mjs";
 
 // National cage-free production-capacity share, Latvia 2026: cage-free 2,148,753
 // of 4,596,707 laying-hen places = 46.7% ~ 0.47 (Eglitis & Kanepajs 2026). Used
-// to weight unlabelled SKUs. It is a production-capacity proxy, not a retail
-// volume share. Spain's analogue was 0.33.
+// to weight unlabelled SKUs. Production-capacity proxy, not a retail volume share.
 const ANCHOR = 0.47;
 
 function defaultTag(d = new Date()) {
   const y = d.getFullYear();
   const q = Math.floor(d.getMonth() / 3) + 1;
   return `${y}-Q${q}-LV`;
+}
+
+// Pack price in EUR from a "1.99 EUR" style string.
+function parsePriceEur(text) {
+  const m = String(text || "").match(/(\d+[.,]\d{1,2}|\d+)/);
+  return m ? Number(m[1].replace(",", ".")) : null;
+}
+// Eggs per pack from the listing name: "10gab.", "12 gab", "6gab.", "15 gab.", "10 gb."
+function packCount(name) {
+  const m = String(name || "").match(/(\d+)\s*(?:gab|gb)\b/i);
+  return m ? Number(m[1]) : null;
+}
+function median(arr) {
+  if (!arr.length) return null;
+  const s = [...arr].sort((a, b) => a - b);
+  const k = Math.floor(s.length / 2);
+  return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2;
 }
 
 function csvEscape(v) {
@@ -45,9 +65,32 @@ function toCSV(rows, columns) {
   return head + "\n" + body + "\n";
 }
 
+async function appendHistory(date, summaryRows) {
+  const path = "data/history/history.json";
+  let hist = [];
+  try { hist = JSON.parse(await readFile(path, "utf8")); } catch { hist = []; }
+  const rec = { date, retailers: {} };
+  for (const b of summaryRows) {
+    if (!b.shell_egg_listings) continue;
+    rec.retailers[b.retailer] = {
+      n: b.shell_egg_listings,
+      cage_free_share_strict_pct: b.cage_free_share_strict_pct,
+      cage_free_share_anchor_pct: b.cage_free_share_anchor_pct,
+      median_price_per_egg: b.median_price_per_egg,
+    };
+  }
+  hist = hist.filter(h => h.date !== date); // upsert: one record per date
+  hist.push(rec);
+  hist.sort((a, b) => (a.date < b.date ? -1 : 1));
+  await mkdir("data/history", { recursive: true });
+  await writeFile(path, JSON.stringify(hist, null, 2), "utf8");
+  console.log(`History: ${hist.length} dated snapshot(s) (latest ${date}).`);
+}
+
 async function main() {
   const tag = process.argv[2] || defaultTag();
-  console.log(`Running Latvian scrape for ${tag}`);
+  const runDate = process.argv[3] || new Date().toISOString().slice(0, 10);
+  console.log(`Running Latvian scrape for ${tag} (history date ${runDate})`);
 
   const runners = [
     ["Rimi",    scrapeRimi],
@@ -74,6 +117,7 @@ async function main() {
     if (r.error || r.source === "external_only") {
       r.eu_code = null; r.production_label = "n/a"; r.is_shell_egg = null;
       r.cage_free = null; r.classify_source = "n/a";
+      r.price_eur = null; r.pack_count = null; r.price_per_egg = null;
       continue;
     }
     const c = classify(r);
@@ -82,12 +126,16 @@ async function main() {
     r.production_label = codeLabel(c.code);
     r.is_shell_egg = isShellEgg(r);
     r.cage_free = c.code === null ? null : isCageFree(c.code);
+    r.price_eur = parsePriceEur(r.price_text);
+    r.pack_count = packCount(r.name);
+    r.price_per_egg = (r.price_eur != null && r.pack_count)
+      ? Number((r.price_eur / r.pack_count).toFixed(4)) : null;
   }
 
   await mkdir("data/raw", { recursive: true });
   await mkdir("data/summary", { recursive: true });
 
-  const cols = ["retailer", "source", "name", "price_text", "unit_price", "tipo_produccion",
+  const cols = ["retailer", "source", "name", "price_text", "price_eur", "pack_count", "price_per_egg",
     "eu_code", "production_label", "classify_source", "is_shell_egg", "cage_free", "note", "error"];
   await writeFile(`data/raw/${tag}_listings.csv`, toCSV(all, cols), "utf8");
   await writeFile(`data/raw/${tag}_listings.json`, JSON.stringify(all, null, 2), "utf8");
@@ -99,8 +147,10 @@ async function main() {
       retailer: key, total_listings: 0, shell_egg_listings: 0,
       organic: 0, free_range: 0, barn: 0, caged: 0, unknown: 0,
       cage_free_listings: 0,
-      cage_free_share_strict_pct: null,   // cage-free / all shell eggs (unknowns = not-cage-free)
-      cage_free_share_anchor_pct: null,   // (cage-free + unknown*ANCHOR) / all shell eggs
+      cage_free_share_strict_pct: null,
+      cage_free_share_anchor_pct: null,
+      median_price_per_egg: null,
+      _prices: [],
       note: ""
     };
     const b = byRetailer[key];
@@ -117,17 +167,23 @@ async function main() {
     else if (r.eu_code === 3) b.caged++;
     else b.unknown++;
     if (r.cage_free) b.cage_free_listings++;
+    if (r.price_per_egg != null) b._prices.push(r.price_per_egg);
   }
   for (const b of Object.values(byRetailer)) {
     if (b.shell_egg_listings) {
       b.cage_free_share_strict_pct = Math.round(100 * b.cage_free_listings / b.shell_egg_listings);
       b.cage_free_share_anchor_pct = Math.round(100 * (b.cage_free_listings + b.unknown * ANCHOR) / b.shell_egg_listings);
+      const med = median(b._prices);
+      b.median_price_per_egg = med != null ? Number(med.toFixed(4)) : null;
     }
+    delete b._prices;
   }
   const summaryRows = Object.values(byRetailer);
-  const sumCols = ["retailer", "total_listings", "shell_egg_listings", "organic", "free_range", "barn", "caged", "unknown", "cage_free_listings", "cage_free_share_strict_pct", "cage_free_share_anchor_pct", "note"];
+  const sumCols = ["retailer", "total_listings", "shell_egg_listings", "organic", "free_range", "barn", "caged", "unknown", "cage_free_listings", "cage_free_share_strict_pct", "cage_free_share_anchor_pct", "median_price_per_egg", "note"];
   await writeFile(`data/summary/${tag}_summary.csv`, toCSV(summaryRows, sumCols), "utf8");
   await writeFile(`data/summary/${tag}_summary.json`, JSON.stringify(summaryRows, null, 2), "utf8");
+
+  await appendHistory(runDate, summaryRows);
 
   console.log(`\nNational cage-free anchor: ${Math.round(ANCHOR * 100)}% (Latvia production capacity, Eglitis & Kanepajs 2026)`);
   console.log("Summary by retailer (chicken shell eggs only):");
@@ -137,6 +193,7 @@ async function main() {
     "0-org": b.organic, "1-free": b.free_range, "2-barn": b.barn, "3-cage": b.caged, "?": b.unknown,
     cf_strict: b.cage_free_share_strict_pct,
     cf_anchor: b.cage_free_share_anchor_pct,
+    "med_eur/egg": b.median_price_per_egg,
   })));
 }
 

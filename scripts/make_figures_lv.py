@@ -125,14 +125,78 @@ def make_figure(summary_rows: list[dict], out: Path, tag: str) -> None:
     plt.close(fig)
 
 
+CODE_COLOR = {0: COLOR_ORGANIC, 1: COLOR_FREE_RANGE, 2: COLOR_BARN, 3: COLOR_CAGED}
+CODE_LABEL = {0: "0 organic", 1: "1 free-range", 2: "2 barn", 3: "3 caged"}
+
+
+def make_price_figure(raw_rows: list[dict], out: Path, tag: str) -> None:
+    """Strip plot: x = retailer, y = price per egg (EUR), one point per product,
+    colored by EU production system. A short grey dash marks each retailer's median.
+    """
+    quarter = tag.replace("-LV", "")
+    pts = [r for r in raw_rows
+           if r.get("is_shell_egg") and r.get("price_per_egg") is not None and r.get("eu_code") is not None]
+
+    # Retailers present, ordered by basket size (desc) for consistency with the mix figure.
+    counts: dict[str, int] = {}
+    for r in pts:
+        counts[r["retailer"]] = counts.get(r["retailer"], 0) + 1
+    shops = sorted(counts, key=lambda s: counts[s], reverse=True)
+    xpos = {s: i for i, s in enumerate(shops)}
+
+    fig, ax = plt.subplots(figsize=(7.6, 4.8), dpi=300)
+
+    for s in shops:
+        col = [r for r in pts if r["retailer"] == s]
+        # Deterministic horizontal jitter (no RNG, uncorrelated with price): a
+        # golden-ratio sequence spreads points evenly across a +/-0.18 band so the
+        # x-offset carries no meaning beyond separating overlapping dots.
+        for i, r in enumerate(col):
+            offset = ((i * 0.6180339887) % 1.0 - 0.5) * 0.36
+            ax.scatter(xpos[s] + offset, r["price_per_egg"],
+                       s=80, color=CODE_COLOR[r["eu_code"]], edgecolor="white", linewidth=0.7,
+                       alpha=0.9, zorder=3)
+        # Median dash.
+        ys = sorted(r["price_per_egg"] for r in col)
+        med = ys[len(ys) // 2] if len(ys) % 2 else (ys[len(ys) // 2 - 1] + ys[len(ys) // 2]) / 2
+        ax.plot([xpos[s] - 0.28, xpos[s] + 0.28], [med, med], color="#333333", linewidth=1.6, zorder=4)
+        ax.text(xpos[s] + 0.30, med, f"mediāna {med:.2f}", va="center", ha="left", fontsize=7.5, color="#333333")
+
+    ax.set_xticks(range(len(shops)))
+    ax.set_xticklabels([f"{s}\n(n={counts[s]})" for s in shops])
+    ax.set_xlim(-0.6, len(shops) - 0.4 + 0.6)
+    ax.set_ylim(0, max(r["price_per_egg"] for r in pts) * 1.12)
+    ax.set_ylabel("Cena par olu (EUR) / Price per egg (EUR)")
+    ax.set_title(f"Olu cena pa tirgotājiem un turēšanas veida  ·  {quarter}")
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.grid(axis="y", alpha=0.25, linestyle=":")
+    ax.set_axisbelow(True)
+
+    codes_present = sorted({r["eu_code"] for r in pts})
+    legend_items = [mpatches.Patch(facecolor=CODE_COLOR[c], label=CODE_LABEL[c]) for c in codes_present]
+    ax.legend(handles=legend_items, loc="upper center", bbox_to_anchor=(0.5, -0.13),
+              ncol=len(legend_items), frameon=False, fontsize=8.5, handlelength=1.2, handleheight=1.0)
+
+    fig.tight_layout()
+    fig.savefig(out, bbox_inches="tight", dpi=300)
+    plt.close(fig)
+
+
 def main() -> None:
     tag = sys.argv[1] if len(sys.argv) > 1 else default_tag()
     root = Path(__file__).resolve().parent.parent
     summary_path = root / "scraper" / "data" / "summary" / f"{tag}_summary.json"
     summary_rows = json.loads(summary_path.read_text(encoding="utf-8"))
-    out = root / f"fig_lv_listings_mix_{tag}.png"
-    make_figure(summary_rows, out, tag)
-    print(f"Wrote {out}")
+    raw_path = root / "scraper" / "data" / "raw" / f"{tag}_listings.json"
+    raw_rows = json.loads(raw_path.read_text(encoding="utf-8"))
+
+    out_mix = root / f"fig_lv_listings_mix_{tag}.png"
+    out_price = root / f"fig_lv_price_per_egg_{tag}.png"
+    make_figure(summary_rows, out_mix, tag)
+    make_price_figure(raw_rows, out_price, tag)
+    print(f"Wrote {out_mix}")
+    print(f"Wrote {out_price}")
 
 
 if __name__ == "__main__":
