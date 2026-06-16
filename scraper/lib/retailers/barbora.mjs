@@ -16,13 +16,25 @@ function extractProductList(html) {
   if (i < 0) return [];
   const start = html.indexOf("[", i);
   if (start < 0) return [];
-  let depth = 0, j = start;
+  // String-aware bracket scan: only count [ ] that are OUTSIDE JSON string
+  // literals, so a stray bracket inside a product title cannot truncate the array.
+  let depth = 0, inStr = false, esc = false, j = start;
   for (; j < html.length; j++) {
     const c = html[j];
-    if (c === "[") depth++;
+    if (inStr) {
+      if (esc) esc = false;
+      else if (c === "\\") esc = true;
+      else if (c === '"') inStr = false;
+      continue;
+    }
+    if (c === '"') inStr = true;
+    else if (c === "[") depth++;
     else if (c === "]") { depth--; if (depth === 0) { j++; break; } }
   }
-  try { return JSON.parse(html.slice(start, j)); } catch { return []; }
+  try { return JSON.parse(html.slice(start, j)); } catch (e) {
+    console.error(`  Barbora: product-list JSON parse failed (${e.message})`);
+    return [];
+  }
 }
 
 export async function scrape() {

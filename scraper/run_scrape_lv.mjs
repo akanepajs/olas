@@ -37,10 +37,13 @@ function defaultTag(d = new Date()) {
   return `${y}-Q${q}-LV`;
 }
 
-// Pack price in EUR from a "1.99 EUR" style string.
+// Pack price in EUR from a "1.99 EUR" style string. Captures the full numeric
+// token (any number of decimals) and rounds to cents, rather than truncating.
 function parsePriceEur(text) {
-  const m = String(text || "").match(/(\d+[.,]\d{1,2}|\d+)/);
-  return m ? Number(m[1].replace(",", ".")) : null;
+  const m = String(text || "").match(/(\d+(?:[.,]\d+)?)/);
+  if (!m) return null;
+  const v = Number(m[1].replace(",", "."));
+  return Number.isFinite(v) ? Math.round(v * 100) / 100 : null;
 }
 // Eggs per pack from the listing name: "10gab.", "12 gab", "6gab.", "15 gab.", "10 gb."
 function packCount(name) {
@@ -68,7 +71,13 @@ function toCSV(rows, columns) {
 async function appendHistory(date, summaryRows) {
   const path = "data/history/history.json";
   let hist = [];
-  try { hist = JSON.parse(await readFile(path, "utf8")); } catch { hist = []; }
+  try {
+    hist = JSON.parse(await readFile(path, "utf8"));
+  } catch (e) {
+    // Only treat a missing file as empty history. A corrupt/unreadable existing
+    // file must NOT be silently replaced (that would destroy the accumulated series).
+    if (e.code !== "ENOENT") throw new Error(`history.json unreadable; refusing to overwrite: ${e.message}`);
+  }
   const rec = { date, retailers: {} };
   for (const b of summaryRows) {
     if (!b.shell_egg_listings) continue;
@@ -108,9 +117,22 @@ async function main() {
       console.log(`  ${label}: ${rows.length} rows`);
       all.push(...rows);
     } catch (e) {
-      console.log(`  ${label}: FAILED — ${e.message}`);
+      console.log(`  ${label}: FAILED: ${e.message}`);
       all.push({ retailer: label, error: e.message });
     }
+  }
+
+  // Fail loudly if a real data retailer (not an external_only stub) threw. A
+  // transient outage or page-structure change must NOT be silently committed as
+  // a 0%/"no catalogue" row and a permanent gap in the history series: exit
+  // non-zero and write nothing, so the weekly CI run goes red and the prior
+  // committed snapshot stays live until a human looks.
+  const EXPECTED = ["Rimi", "Barbora"];
+  const failedExpected = all.filter(r => r.error && EXPECTED.includes(r.retailer)).map(r => r.retailer);
+  if (failedExpected.length) {
+    console.error(`\nFATAL: expected retailer(s) failed: ${failedExpected.join(", ")}. Writing nothing; exiting non-zero.`);
+    process.exitCode = 1;
+    return;
   }
 
   for (const r of all) {

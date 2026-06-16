@@ -15,6 +15,7 @@ from __future__ import annotations
 import base64
 import json
 import sys
+from datetime import date
 from pathlib import Path
 
 NATIONAL_CF_PCT = 47
@@ -101,7 +102,7 @@ def build(tag, olas_dir):
     summary = json.loads((root / "scraper" / "data" / "summary" / f"{tag}_summary.json").read_text(encoding="utf-8"))
     hist_path = root / "scraper" / "data" / "history" / "history.json"
     history = json.loads(hist_path.read_text(encoding="utf-8")) if hist_path.exists() else []
-    data_date = max((h["date"] for h in history), default=tag)
+    data_date = max((h["date"] for h in history), default=date.today().isoformat())
 
     b64_mix = base64.b64encode((root / f"fig_lv_listings_mix_{tag}.png").read_bytes()).decode("ascii")
     b64_price = base64.b64encode((root / f"fig_lv_price_per_egg_{tag}.png").read_bytes()).decode("ascii")

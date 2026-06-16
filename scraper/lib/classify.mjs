@@ -54,15 +54,20 @@ export function classify(product) {
     return { code: FIELD_MAP[rawTipo], source: "tipo_produccion_field", confidence: "high" };
   }
   const name = product.name || "";
-  // EU production-code digit in the name ("Nr.0/1/2/3"): the legal method code.
-  const dm = name.match(EGG_CODE_DIGIT);
-  if (dm) {
-    return { code: Number(dm[1]), source: "egg_code_number", confidence: "high" };
-  }
+  // Explicit production-system keyword first (sprostos / kūtī / brīvās / eko /
+  // jaula / suelo ...). These are unambiguous, so they take precedence over a
+  // bare "Nr.X / No.X" token, which can also appear as a marketing label
+  // ("TOP No.1") rather than the legal egg code and would otherwise misclassify.
   for (const p of NAME_PATTERNS) {
     if (p.regex.test(name)) {
       return { code: p.code, source: "name_keyword", confidence: "medium" };
     }
+  }
+  // EU production-code digit in the name ("Nr.0/1/2/3"): used when no housing
+  // keyword is present (common on Latvian packs that print only the code).
+  const dm = name.match(EGG_CODE_DIGIT);
+  if (dm) {
+    return { code: Number(dm[1]), source: "egg_code_number", confidence: "medium" };
   }
   return { code: null, source: "unknown", confidence: "low" };
 }

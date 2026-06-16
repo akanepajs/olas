@@ -18,10 +18,10 @@ export async function scrape() {
   const seen = new Set();
   // data-gtm-eec-product='{"id":"812416","name":"Olas ... Nr.3 ...","price":1.99,...}'
   const re = /data-gtm-eec-product='([^']+)'/g;
-  let m;
+  let m, skipped = 0;
   while ((m = re.exec(html))) {
     let p;
-    try { p = JSON.parse(m[1]); } catch { continue; }
+    try { p = JSON.parse(m[1]); } catch { skipped++; continue; }
     if (!p || !p.name || seen.has(p.id)) continue;
     seen.add(p.id);
     out.push({
@@ -37,6 +37,7 @@ export async function scrape() {
       tipo_produccion: "",
     });
   }
+  if (skipped) console.error(`  Rimi: skipped ${skipped} unparseable product blob(s)`);
   if (out.length === 0) throw new Error("Rimi: no products parsed (page structure may have changed)");
   return out;
 }

@@ -115,10 +115,11 @@ def make_figure(summary_rows: list[dict], out: Path, tag: str) -> None:
         mpatches.Patch(facecolor=COLOR_FREE_RANGE, label="1 free-range"),
         mpatches.Patch(facecolor=COLOR_BARN,       label="2 barn"),
         mpatches.Patch(facecolor=COLOR_CAGED,      label="3 caged"),
-        mpatches.Patch(facecolor=COLOR_UNKNOWN,    label="unknown"),
     ]
+    if any((r.get("unknown") or 0) > 0 for r in rows):
+        legend_items.append(mpatches.Patch(facecolor=COLOR_UNKNOWN, label="unknown"))
     ax.legend(handles=legend_items, loc="lower center", bbox_to_anchor=(0.5, -0.30 - 0.02 * n),
-              ncol=5, frameon=False, fontsize=8.5, handlelength=1.2, handleheight=1.0)
+              ncol=len(legend_items), frameon=False, fontsize=8.5, handlelength=1.2, handleheight=1.0)
 
     fig.tight_layout()
     fig.savefig(out, bbox_inches="tight", dpi=300)
@@ -134,8 +135,19 @@ def make_price_figure(raw_rows: list[dict], out: Path, tag: str) -> None:
     colored by EU production system. A short grey dash marks each retailer's median.
     """
     quarter = tag.replace("-LV", "")
+    # Same set the scraper takes the median over: every shell egg with a parseable
+    # per-egg price (regardless of production code), so the chart median equals the
+    # table's median_price_per_egg even if an unlabelled egg ever appears.
     pts = [r for r in raw_rows
-           if r.get("is_shell_egg") and r.get("price_per_egg") is not None and r.get("eu_code") is not None]
+           if r.get("is_shell_egg") and r.get("price_per_egg") is not None]
+    if not pts:
+        fig, ax = plt.subplots(figsize=(7.6, 4.8), dpi=300)
+        ax.text(0.5, 0.5, "Nav cenu datu / no price data", ha="center", va="center",
+                transform=ax.transAxes, color="#999999")
+        ax.set_axis_off()
+        fig.savefig(out, bbox_inches="tight", dpi=300)
+        plt.close(fig)
+        return
 
     # Retailers present, ordered by basket size (desc) for consistency with the mix figure.
     counts: dict[str, int] = {}
@@ -154,7 +166,7 @@ def make_price_figure(raw_rows: list[dict], out: Path, tag: str) -> None:
         for i, r in enumerate(col):
             offset = ((i * 0.6180339887) % 1.0 - 0.5) * 0.36
             ax.scatter(xpos[s] + offset, r["price_per_egg"],
-                       s=80, color=CODE_COLOR[r["eu_code"]], edgecolor="white", linewidth=0.7,
+                       s=80, color=CODE_COLOR.get(r["eu_code"], COLOR_UNKNOWN), edgecolor="white", linewidth=0.7,
                        alpha=0.9, zorder=3)
         # Median dash.
         ys = sorted(r["price_per_egg"] for r in col)
@@ -165,16 +177,18 @@ def make_price_figure(raw_rows: list[dict], out: Path, tag: str) -> None:
     ax.set_xticks(range(len(shops)))
     ax.set_xticklabels([f"{s}\n(n={counts[s]})" for s in shops])
     ax.set_xlim(-0.6, len(shops) - 0.4 + 0.6)
-    ax.set_ylim(0, max(r["price_per_egg"] for r in pts) * 1.12)
+    ax.set_ylim(0, max((r["price_per_egg"] for r in pts), default=1.0) * 1.12)
     ax.set_ylabel("Cena par olu (EUR) / Price per egg (EUR)")
-    ax.set_title(f"Olu cena pa tirgotājiem un turēšanas veida  ·  {quarter}")
+    ax.set_title(f"Olu cena pa tirgotājiem un turēšanas veidu  ·  {quarter}")
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     ax.grid(axis="y", alpha=0.25, linestyle=":")
     ax.set_axisbelow(True)
 
-    codes_present = sorted({r["eu_code"] for r in pts})
-    legend_items = [mpatches.Patch(facecolor=CODE_COLOR[c], label=CODE_LABEL[c]) for c in codes_present]
+    present = {r["eu_code"] for r in pts}
+    labels = {**CODE_LABEL, None: "unknown"}
+    colors = {**CODE_COLOR, None: COLOR_UNKNOWN}
+    legend_items = [mpatches.Patch(facecolor=colors[c], label=labels[c]) for c in [0, 1, 2, 3, None] if c in present]
     ax.legend(handles=legend_items, loc="upper center", bbox_to_anchor=(0.5, -0.13),
               ncol=len(legend_items), frameon=False, fontsize=8.5, handlelength=1.2, handleheight=1.0)
 
