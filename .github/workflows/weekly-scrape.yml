@@ -14,8 +14,11 @@ permissions:
   pages: write
   id-token: write
 
+# Share the 'pages' concurrency group with deploy-pages so the two never deploy
+# to the github-pages environment simultaneously (both use cancel-in-progress:false
+# so neither cancels the other; they serialize).
 concurrency:
-  group: weekly-scrape
+  group: pages
   cancel-in-progress: false
 
 jobs:
@@ -26,6 +29,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -60,6 +65,8 @@ jobs:
             echo "No changes this run."
           else
             git commit -m "Weekly egg-listings update ${{ steps.vars.outputs.date }}"
+            # Rebase onto any commit that landed since checkout, then push.
+            git pull --rebase --autostash origin main || true
             git push
           fi
 
