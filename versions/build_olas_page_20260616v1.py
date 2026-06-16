@@ -24,13 +24,6 @@ LV_REPORT_URL = "https://www.dzivniekubriviba.lv/assets/downloadable-assets/ekon
 EU_STANDARDS_URL = "https://agriculture.ec.europa.eu/farming/animal-products/eggs_en"
 RETAILER_ORDER = ["Rimi", "Barbora"]
 
-# Online catalogues the scraper reads (the actual scraped sources, surfaced as
-# clickable links on the page).
-SOURCE_URLS = {
-    "Rimi": "https://www.rimi.lv/e-veikals/lv/produkti/piena-produkti-un-olas/olas/c/SH-11-6",
-    "Barbora": "https://barbora.lv/piena-produkti-un-olas/olas",
-}
-
 LV_NOTES = {
     "top!": "top! (etop.lv) tiešsaistes katalogs ir Angular lietotne aiz /v1 JSON saskarnes; olu pozīcijas šajā piegājienā nebija mašīnlasāmas.",
     "Lidl": "Lidl Latvijā (lidl.lv) nav tiešsaistes pārtikas veikala (tikai akciju/bukletu lapa); tiešsaistē olu pozīciju nav.",
@@ -86,12 +79,6 @@ def stub_list_html(rows, lang):
     return "<ul>" + "".join(items) + "</ul>"
 
 
-def source_links_li(lang):
-    links = ", ".join(f'<a href="{url}">{name}</a>' for name, url in SOURCE_URLS.items())
-    label = "Iegūtie tiešsaistes katalogi" if lang == "lv" else "Scraped online catalogues"
-    return f"<li>{label}: {links}.</li>"
-
-
 def history_table_html(history, retailers, lang):
     date_h = "Datums" if lang == "lv" else "Date"
     sub = (["n", "Bezspr. %", "€/ola"] if lang == "lv" else ["n", "Cage-free %", "€/egg"])
@@ -117,14 +104,8 @@ def build(tag, olas_dir):
     history = json.loads(hist_path.read_text(encoding="utf-8")) if hist_path.exists() else []
     data_date = max((h["date"] for h in history), default=date.today().isoformat())
 
-    def b64(name):
-        return base64.b64encode((root / name).read_bytes()).decode("ascii")
-
-    # Latvian variants keep the base filename; English variants carry _en.
-    b64_mix_lv = b64(f"fig_lv_listings_mix_{tag}.png")
-    b64_mix_en = b64(f"fig_lv_listings_mix_en_{tag}.png")
-    b64_price_lv = b64(f"fig_lv_price_per_egg_{tag}.png")
-    b64_price_en = b64(f"fig_lv_price_per_egg_en_{tag}.png")
+    b64_mix = base64.b64encode((root / f"fig_lv_listings_mix_{tag}.png").read_bytes()).decode("ascii")
+    b64_price = base64.b64encode((root / f"fig_lv_price_per_egg_{tag}.png").read_bytes()).decode("ascii")
     quarter = tag.replace("-LV", "")
 
     lrows = listing_rows(summary)
@@ -140,7 +121,6 @@ def build(tag, olas_dir):
     hist_retailers = [r for r in RETAILER_ORDER if any(r in h.get("retailers", {}) for h in history)]
     hist_lv = history_table_html(history, hist_retailers, "lv")
     hist_en = history_table_html(history, hist_retailers, "en")
-    src_lv, src_en = source_links_li("lv"), source_links_li("en")
 
     html = f"""<!DOCTYPE html>
 <html lang="lv">
@@ -207,7 +187,7 @@ def build(tag, olas_dir):
   </div>
 
   <figure>
-    <img alt="Bezsprostu olu īpatsvars Latvijas veikalos" src="data:image/png;base64,{b64_mix_lv}">
+    <img alt="Bezsprostu olu īpatsvars Latvijas veikalos" src="data:image/png;base64,{b64_mix}">
     <figcaption>ES ražošanas kodu sadalījums pa tirgotājiem (0 bioloģiskās, 1 brīvās turēšanas, 2 kūtī dētas, 3 sprostos). Pārtrauktā līnija: valsts ražošanas bezsprostu īpatsvars aptuveni {NATIONAL_CF_PCT}%.</figcaption>
   </figure>
 
@@ -216,7 +196,7 @@ def build(tag, olas_dir):
   <h2>Cena par olu</h2>
   <p>Cena par olu (pakas cena dalīta ar olu skaitu pakā, lai 6 un 10 olu iepakojumi būtu salīdzināmi). Sprostos dētas olas ir lētākās; bioloģiskās dārgākās. Mediānā: Rimi {rimi_med} €/olu, Barbora {barb_med} €/olu.</p>
   <figure>
-    <img alt="Olu cena pa tirgotājiem un turēšanas veidu" src="data:image/png;base64,{b64_price_lv}">
+    <img alt="Olu cena pa tirgotājiem un turēšanas veidu" src="data:image/png;base64,{b64_price}">
     <figcaption>Katrs punkts ir viens produkts; krāsa = turēšanas veids (tāda pati kā augšējā attēlā). Pelēkā svītra: tirgotāja mediānā.</figcaption>
   </figure>
 
@@ -236,7 +216,6 @@ def build(tag, olas_dir):
 
   <h2>Avoti</h2>
   <ul>
-    {src_lv}
     <li>Eglītis un Kaņepājs (2026), <a href="{LV_REPORT_URL}">Ekonomiskā analīze par dējējvistu sprostu aizlieguma ietekmi Latvijā</a> (valsts bezsprostu īpatsvars).</li>
     <li>Eiropas Komisija, <a href="{EU_STANDARDS_URL}">olu tirdzniecības standarti</a> (kodi 0/1/2/3).</li>
     <li>Kods un dati: <a href="{REPO_URL}">{REPO_URL}</a>.</li>
@@ -260,7 +239,7 @@ def build(tag, olas_dir):
   </div>
 
   <figure>
-    <img alt="Cage-free share of egg listings at Latvian retailers" src="data:image/png;base64,{b64_mix_en}">
+    <img alt="Cage-free share of egg listings at Latvian retailers" src="data:image/png;base64,{b64_mix}">
     <figcaption>EU production-code mix by retailer (0 organic, 1 free-range, 2 barn, 3 caged). Dashed line: national cage-free production share, about {NATIONAL_CF_PCT}%.</figcaption>
   </figure>
 
@@ -269,7 +248,7 @@ def build(tag, olas_dir):
   <h2>Price per egg</h2>
   <p>Price per egg (pack price divided by the number of eggs per pack, so 6- and 10-egg packs compare fairly). Caged eggs are the cheapest; organic the dearest. Medians: Rimi {rimi_med} EUR/egg, Barbora {barb_med} EUR/egg.</p>
   <figure>
-    <img alt="Egg price by retailer and production system" src="data:image/png;base64,{b64_price_en}">
+    <img alt="Egg price by retailer and production system" src="data:image/png;base64,{b64_price}">
     <figcaption>Each point is one product; color = production system (same as the chart above). Grey dash: retailer median.</figcaption>
   </figure>
 
@@ -289,7 +268,6 @@ def build(tag, olas_dir):
 
   <h2>Sources</h2>
   <ul>
-    {src_en}
     <li>Eglitis and Kanepajs (2026), <a href="{LV_REPORT_URL}">Economic analysis of a laying-hen cage ban in Latvia</a> (national cage-free share).</li>
     <li>European Commission, <a href="{EU_STANDARDS_URL}">egg marketing standards</a> (codes 0/1/2/3).</li>
     <li>Code and data: <a href="{REPO_URL}">{REPO_URL}</a>.</li>
