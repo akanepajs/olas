@@ -1,0 +1,10 @@
+{
+  "name": "olas-egg-scraper",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Latvian retailer cage-free egg-listings scraper (olas.kanepajs.eu)",
+  "scripts": {
+    "scrape": "node run_scrape_lv.mjs"
+  }
+}
