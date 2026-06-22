@@ -1,12 +1,9 @@
-"""Build the two single-language pages for the cage-free Latvian eggs site.
+"""Build the self-contained bilingual (LV + EN) index.html for olas.kanepajs.eu.
 
-Latvian -> index.html (served at olas.kanepajs.eu)
-English -> index_en.html (mirrored to eggs.kanepajs.eu by the eggs repo)
-
-Each page is fully self-contained (its own figures embedded as base64) and links
-to the other language on its own domain. Numbers come from the scraper summary
-JSON and the daily history JSON so the text matches the data exactly. Reuses the
-euff.kanepajs.eu CSS scaffold. No em dashes (outward-facing, Art's name).
+Pulls per-retailer numbers from the scraper summary JSON and the weekly history
+JSON (so the page text matches the data exactly) and embeds both figures as
+base64 data URIs. Reuses the euff.kanepajs.eu CSS scaffold. No em dashes
+(outward-facing, Art's name).
 
 Usage:
     python scripts/build_olas_page.py 2026-Q2-LV /path/to/olas_site
@@ -23,8 +20,6 @@ from pathlib import Path
 
 NATIONAL_CF_PCT = 47
 REPO_URL = "https://github.com/akanepajs/olas"
-OLAS_URL = "https://olas.kanepajs.eu"
-EGGS_URL = "https://eggs.kanepajs.eu"
 LV_REPORT_URL = "https://www.dzivniekubriviba.lv/assets/downloadable-assets/ekonomiska-analize-par-dejejvistu-sprostu-aizlieguma-ietekmi-latvija.pdf"
 EU_STANDARDS_URL = "https://agriculture.ec.europa.eu/farming/animal-products/eggs_en"
 RETAILER_ORDER = ["Rimi", "Barbora", "Lidl"]
@@ -46,45 +41,6 @@ LV_NOTES = {
 EN_NOTES = {
     "top!": "top! (etop.lv) is TOP's own-brand (TIP TOP) showcase, not a full online grocery: the eggs section has only one own-brand product (TIP TOP barn eggs, EU code 2, about 0.30 EUR/egg), so it is not comparable to a full assortment and is excluded.",
 }
-
-CSS = """<style>
-  :root {
-    --teal: #88a8a8; --olive: #889880; --pink: #c890a0; --ochre: #e0c868;
-    --mint: #c8e8e0; --sage: #c0d0a9; --burgundy: #744c5b;
-    --text: #36453e; --muted: #6a7a72; --grid: #dddddd; --bg: #fafaf8; --card: #ffffff;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    color: var(--text); background: var(--bg); line-height: 1.55;
-    padding: 2rem 1rem; max-width: 960px; margin: 0 auto;
-  }
-  h1 { font-size: 1.55rem; font-weight: 700; margin-bottom: 0.3rem; }
-  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem; }
-  h2 { font-size: 1.15rem; font-weight: 600; margin: 2.2rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 2px solid var(--teal); }
-  p, li { font-size: 0.92rem; margin-bottom: 0.6rem; }
-  ul { padding-left: 1.3rem; margin-bottom: 1rem; }
-  a { color: var(--burgundy); }
-  .key-message {
-    background: var(--mint); border-left: 4px solid var(--teal);
-    padding: 1rem 1.2rem; border-radius: 0 6px 6px 0; margin: 1.2rem 0; font-size: 0.95rem;
-  }
-  .key-message strong { display: block; margin-bottom: 0.3rem; }
-  figure { margin: 1.4rem 0; }
-  figure img { width: 100%; height: auto; border: 1px solid var(--grid); border-radius: 6px; background: #fff; }
-  figcaption { color: var(--muted); font-size: 0.82rem; margin-top: 0.4rem; }
-  table.data { border-collapse: collapse; width: 100%; font-size: 0.86rem; margin: 0.8rem 0 1.2rem; }
-  table.data th, table.data td { border: 1px solid var(--grid); padding: 0.4rem 0.6rem; text-align: center; }
-  table.data th { background: var(--sage); font-weight: 600; }
-  table.data td:first-child, table.data th:first-child { text-align: left; }
-  .lang-toggle { margin-bottom: 1.4rem; }
-  .lang-toggle a {
-    display: inline-block; font-size: 0.85rem; padding: 0.35rem 0.9rem; margin-right: 0.4rem;
-    border: 1px solid var(--teal); background: #fff; color: var(--text); border-radius: 4px; text-decoration: none;
-  }
-  .lang-toggle a.active { background: var(--teal); color: #fff; }
-  .disclosure { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--grid); margin-top: 2.2rem; padding-top: 0.8rem; }
-</style>"""
 
 
 def listing_rows(rows):
@@ -161,25 +117,6 @@ def history_table_html(history, retailers, lang):
     return f"<table class='data'><thead><tr>{top}</tr><tr>{second}</tr></thead><tbody>{''.join(rows_html)}</tbody></table>"
 
 
-def page_shell(lang, title, body):
-    lv_active = "active" if lang == "lv" else ""
-    en_active = "active" if lang == "en" else ""
-    return (
-        "<!DOCTYPE html>\n"
-        f'<html lang="{lang}">\n<head>\n'
-        '<meta charset="UTF-8">\n'
-        '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
-        f"<title>{title}</title>\n"
-        + CSS + "\n</head>\n<body>\n\n"
-        '<div class="lang-toggle">\n'
-        f'  <a href="{OLAS_URL}" class="{lv_active}">Latviski</a>\n'
-        f'  <a href="{EGGS_URL}" class="{en_active}">English</a>\n'
-        "</div>\n"
-        + body
-        + "\n</body>\n</html>\n"
-    )
-
-
 def build(tag, olas_dir):
     root = Path(__file__).resolve().parent.parent
     summary = json.loads((root / "scraper" / "data" / "summary" / f"{tag}_summary.json").read_text(encoding="utf-8"))
@@ -211,7 +148,63 @@ def build(tag, olas_dir):
     hist_en = history_table_html(history, hist_retailers, "en")
     src_lv, src_en = source_links_li("lv"), source_links_li("en")
 
-    body_lv = f"""  <h1>Bezsprostu olu īpatsvars Latvijas mazumtirgotāju sortimentā</h1>
+    html = f"""<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bezsprostu olu īpatsvars Latvijas veikalos / Cage-free eggs in Latvian retail</title>
+<style>
+  :root {{
+    --teal: #88a8a8; --olive: #889880; --pink: #c890a0; --ochre: #e0c868;
+    --mint: #c8e8e0; --sage: #c0d0a9; --burgundy: #744c5b;
+    --text: #36453e; --muted: #6a7a72; --grid: #dddddd; --bg: #fafaf8; --card: #ffffff;
+  }}
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--text); background: var(--bg); line-height: 1.55;
+    padding: 2rem 1rem; max-width: 960px; margin: 0 auto;
+  }}
+  h1 {{ font-size: 1.55rem; font-weight: 700; margin-bottom: 0.3rem; }}
+  .subtitle {{ color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem; }}
+  h2 {{ font-size: 1.15rem; font-weight: 600; margin: 2.2rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 2px solid var(--teal); }}
+  p, li {{ font-size: 0.92rem; margin-bottom: 0.6rem; }}
+  ul {{ padding-left: 1.3rem; margin-bottom: 1rem; }}
+  a {{ color: var(--burgundy); }}
+  .key-message {{
+    background: var(--mint); border-left: 4px solid var(--teal);
+    padding: 1rem 1.2rem; border-radius: 0 6px 6px 0; margin: 1.2rem 0; font-size: 0.95rem;
+  }}
+  .key-message strong {{ display: block; margin-bottom: 0.3rem; }}
+  figure {{ margin: 1.4rem 0; }}
+  figure img {{ width: 100%; height: auto; border: 1px solid var(--grid); border-radius: 6px; background: #fff; }}
+  figcaption {{ color: var(--muted); font-size: 0.82rem; margin-top: 0.4rem; }}
+  table.data {{ border-collapse: collapse; width: 100%; font-size: 0.86rem; margin: 0.8rem 0 1.2rem; }}
+  table.data th, table.data td {{ border: 1px solid var(--grid); padding: 0.4rem 0.6rem; text-align: center; }}
+  table.data th {{ background: var(--sage); font-weight: 600; }}
+  table.data td:first-child, table.data th:first-child {{ text-align: left; }}
+  .lang-toggle {{ margin-bottom: 1.4rem; }}
+  .lang-toggle button {{
+    font: inherit; font-size: 0.85rem; padding: 0.35rem 0.9rem; margin-right: 0.4rem;
+    border: 1px solid var(--teal); background: #fff; color: var(--text); border-radius: 4px; cursor: pointer;
+  }}
+  .lang-toggle button.active {{ background: var(--teal); color: #fff; }}
+  .disclosure {{ color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--grid); margin-top: 2.2rem; padding-top: 0.8rem; }}
+  [data-lang] {{ display: none; }}
+  [data-lang].active {{ display: block; }}
+</style>
+</head>
+<body>
+
+<div class="lang-toggle">
+  <button id="btn-lv" class="active" onclick="setLang('lv')">Latviski</button>
+  <button id="btn-en" onclick="setLang('en')">English</button>
+</div>
+
+<!-- ===================== LATVIAN ===================== -->
+<div data-lang="lv" class="active">
+  <h1>Bezsprostu olu īpatsvars Latvijas mazumtirgotāju sortimentā</h1>
   <div class="subtitle">Tiešsaistes veikalu sortimenta uzskaite pa SKU. Pēdējie dati: {data_date} (atjaunināts katru dienu).</div>
 
   <div class="key-message">
@@ -260,9 +253,11 @@ def build(tag, olas_dir):
   {hist_lv}
 
   <div class="disclosure">Analīzei un teksta sagatavošanai izmantots Claude Code.</div>
-"""
+</div>
 
-    body_en = f"""  <h1>Cage-free share of egg listings at Latvian retailers</h1>
+<!-- ===================== ENGLISH ===================== -->
+<div data-lang="en">
+  <h1>Cage-free share of egg listings at Latvian retailers</h1>
   <div class="subtitle">Online catalogue snapshot by SKU. Latest data: {data_date} (updated daily).</div>
 
   <div class="key-message">
@@ -311,18 +306,27 @@ def build(tag, olas_dir):
   {hist_en}
 
   <div class="disclosure">Claude Code used for analysis and drafting.</div>
+</div>
+
+<script>
+  function setLang(l) {{
+    document.querySelectorAll('[data-lang]').forEach(function (el) {{
+      el.classList.toggle('active', el.getAttribute('data-lang') === l);
+    }});
+    document.getElementById('btn-lv').classList.toggle('active', l === 'lv');
+    document.getElementById('btn-en').classList.toggle('active', l === 'en');
+    document.documentElement.lang = l;
+  }}
+</script>
+</body>
+</html>
 """
 
-    html_lv = page_shell("lv", "Bezsprostu olu īpatsvars Latvijas veikalos", body_lv)
-    html_en = page_shell("en", "Cage-free share of egg listings at Latvian retailers", body_en)
-
     olas_dir.mkdir(parents=True, exist_ok=True)
-    (olas_dir / "index.html").write_text(html_lv, encoding="utf-8")
-    (olas_dir / "index_en.html").write_text(html_en, encoding="utf-8")
+    (olas_dir / "index.html").write_text(html, encoding="utf-8")
     (olas_dir / "CNAME").write_text("olas.kanepajs.eu\n", encoding="utf-8")
     (olas_dir / ".nojekyll").write_text("", encoding="utf-8")
-    print(f"Wrote {olas_dir / 'index.html'} ({len(html_lv)} chars, LV)")
-    print(f"Wrote {olas_dir / 'index_en.html'} ({len(html_en)} chars, EN)")
+    print(f"Wrote {olas_dir / 'index.html'} ({len(html)} chars)")
 
 
 if __name__ == "__main__":
