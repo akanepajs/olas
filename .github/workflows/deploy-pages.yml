@@ -1,8 +1,8 @@
 name: deploy-pages
 
 # Deploy the static site to GitHub Pages via Actions (bypasses the legacy Jekyll
-# builder). Runs on human pushes to main and on manual dispatch. Weekly automated
-# updates deploy from within weekly-scrape.yml (a GITHUB_TOKEN push does not
+# builder). Runs on human pushes to main and on manual dispatch. Daily automated
+# updates deploy from within daily-scrape.yml (a GITHUB_TOKEN push does not
 # trigger this workflow).
 
 on:

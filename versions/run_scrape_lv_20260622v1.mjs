@@ -1,11 +1,10 @@
 // Latvian retailer egg-listing scrape runner. Mirrors run_scrape.mjs (Spain) but
 // targets Latvian chains, adds a national-anchor cage-free metric, per-egg
-// pricing, and a daily time-series history.
+// pricing, and a weekly time-series history.
 //
-// Coverage: Rimi and Barbora (Maxima) are the large Latvian online grocers with
-// full machine-readable catalogues; Lidl publishes its (small) standard egg
-// assortment online too. top!, Mego and Elvi have no comparable online egg
-// catalogue and return external_only stubs.
+// Coverage: Rimi and Barbora (Maxima) are the two large Latvian online grocers
+// with machine-readable catalogues. top!, Lidl, Mego and Elvi have no scrapable
+// online egg catalogue and return external_only stubs.
 //
 // Each SKU is classified by EU production code (0 organic, 1 free-range, 2 barn,
 // 3 caged, or unknown) via lib/classify.mjs. Per-retailer outputs:
@@ -126,7 +125,7 @@ async function main() {
   // Fail loudly if a real data retailer (not an external_only stub) threw. A
   // transient outage or page-structure change must NOT be silently committed as
   // a 0%/"no catalogue" row and a permanent gap in the history series: exit
-  // non-zero and write nothing, so the daily CI run goes red and the prior
+  // non-zero and write nothing, so the weekly CI run goes red and the prior
   // committed snapshot stays live until a human looks.
   const EXPECTED = ["Rimi", "Barbora"];
   const failedExpected = all.filter(r => r.error && EXPECTED.includes(r.retailer)).map(r => r.retailer);

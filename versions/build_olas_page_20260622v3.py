@@ -22,7 +22,7 @@ NATIONAL_CF_PCT = 47
 REPO_URL = "https://github.com/akanepajs/olas"
 LV_REPORT_URL = "https://www.dzivniekubriviba.lv/assets/downloadable-assets/ekonomiska-analize-par-dejejvistu-sprostu-aizlieguma-ietekmi-latvija.pdf"
 EU_STANDARDS_URL = "https://agriculture.ec.europa.eu/farming/animal-products/eggs_en"
-RETAILER_ORDER = ["Rimi", "Barbora", "Lidl"]
+RETAILER_ORDER = ["Rimi", "Barbora"]
 
 # Online catalogues the scraper reads (the actual scraped sources, surfaced as
 # clickable links on the page).
@@ -33,6 +33,7 @@ SOURCE_URLS = {
 
 LV_NOTES = {
     "top!": "top! (etop.lv) ir TOP pašu zīmola (TIP TOP) produktu vietne, nevis pilns interneta veikals: olu sadaļā ir tikai viens pašu zīmola produkts (TIP TOP kūtī dētas, ES kods 2, aptuveni 0.30 €/ola), tāpēc tas nav salīdzināms ar pilnu sortimentu un nav iekļauts.",
+    "Lidl": "Lidl Latvijā (lidl.lv) nav tiešsaistes pārtikas veikala (tikai akciju/bukletu lapa); tiešsaistē olu pozīciju nav.",
     "Mego": "Mego (mego.lv) nav tiešsaistes veikala (tikai informatīva lapa); olu kataloga nav.",
     "Elvi": "Elvi (elvi.lv) olu lapā nav pērkamu produktu (WordPress informatīva/akciju lapa); pozīciju nav.",
 }
@@ -205,7 +206,7 @@ def build(tag, olas_dir):
 <!-- ===================== LATVIAN ===================== -->
 <div data-lang="lv" class="active">
   <h1>Bezsprostu olu īpatsvars Latvijas mazumtirgotāju sortimentā</h1>
-  <div class="subtitle">Tiešsaistes veikalu sortimenta uzskaite pa SKU. Pēdējie dati: {data_date} (atjaunināts katru dienu).</div>
+  <div class="subtitle">Tiešsaistes veikalu sortimenta uzskaite pa SKU. Pēdējie dati: {data_date} (atjaunināts katru nedēļu).</div>
 
   <div class="key-message">
     <strong>Galvenais secinājums</strong>
@@ -230,7 +231,7 @@ def build(tag, olas_dir):
   <p>No katra tirgotāja tiešsaistes kataloga tika nolasītas visas vistu (čaumalas) olu pozīcijas un katra klasificēta pēc ES ražošanas koda (0 bioloģiskās, 1 brīvās turēšanas, 2 kūtī dētas, 3 sprostos), izmantojot olu marķējuma kodu (Nr.0/1/2/3) un/vai atslēgvārdus produkta nosaukumā (kūtī dētas, sprostos, brīvās turēšanas, eko/bio). Paipalu olas un olu produkti (olu baltums u.c.) izslēgti. <strong>Bezsprostu %</strong> = kodi 0/1/2 attiecībā pret visām vistu olu pozīcijām. Visām pozīcijām bija ražošanas marķējums (0 neklasificētu), tāpēc valsts īpatsvara korekcija rezultātu nemaina.</p>
 
   <h2>Sortimenta segums</h2>
-  <p>No sešiem lielajiem tīkliem trīs ir mašīnlasāms tiešsaistes olu katalogs (Rimi, Barbora/Maxima un Lidl; Lidl piedāvā nelielu olu sortimentu). Pārējie:</p>
+  <p>No sešiem lielajiem tīkliem tikai diviem ir mašīnlasāms tiešsaistes olu katalogs (Rimi, Barbora/Maxima). Pārējie:</p>
   {stubs_lv}
 
   <h2>Ierobežojumi</h2>
@@ -248,8 +249,8 @@ def build(tag, olas_dir):
     <li>Kods un dati: <a href="{REPO_URL}">{REPO_URL}</a>.</li>
   </ul>
 
-  <h2>Vēsture</h2>
-  <p>Datu kopa tiek automātiski atjaunināta katru dienu. Katra rinda ir viena datuma momentuzņēmums (bezsprostu % un mediānā cena par olu).</p>
+  <h2>Nedēļas vēsture</h2>
+  <p>Datu kopa tiek automātiski atjaunināta katru nedēļu. Katra rinda ir viena datuma momentuzņēmums (bezsprostu % un mediānā cena par olu).</p>
   {hist_lv}
 
   <div class="disclosure">Analīzei un teksta sagatavošanai izmantots Claude Code.</div>
@@ -258,7 +259,7 @@ def build(tag, olas_dir):
 <!-- ===================== ENGLISH ===================== -->
 <div data-lang="en">
   <h1>Cage-free share of egg listings at Latvian retailers</h1>
-  <div class="subtitle">Online catalogue snapshot by SKU. Latest data: {data_date} (updated daily).</div>
+  <div class="subtitle">Online catalogue snapshot by SKU. Latest data: {data_date} (updated weekly).</div>
 
   <div class="key-message">
     <strong>Headline</strong>
@@ -283,7 +284,7 @@ def build(tag, olas_dir):
   <p>Every chicken shell-egg listing in each retailer's online catalogue was read and classified by EU production code (0 organic, 1 free-range, 2 barn, 3 caged), using the egg-marking code in the name (Nr.0/1/2/3) and/or production keywords (kuti detas = barn, sprostos = caged, brivas turesanas = free-range, eko/bio = organic). Quail eggs and egg products (egg white, etc.) were excluded. <strong>Cage-free %</strong> = codes 0/1/2 over all chicken shell-egg listings. Every listing carried a production label (0 unknowns), so the national-anchor adjustment leaves the figure unchanged.</p>
 
   <h2>Coverage</h2>
-  <p>Of six large chains, three have a machine-readable online egg catalogue (Rimi, Barbora/Maxima, and Lidl; Lidl carries a small egg range). The others:</p>
+  <p>Of six large chains, only two have a machine-readable online egg catalogue (Rimi, Barbora/Maxima). The others:</p>
   {stubs_en}
 
   <h2>Limitations</h2>
@@ -301,8 +302,8 @@ def build(tag, olas_dir):
     <li>Code and data: <a href="{REPO_URL}">{REPO_URL}</a>.</li>
   </ul>
 
-  <h2>History</h2>
-  <p>The dataset is refreshed automatically each day. Each row is one date's snapshot (cage-free % and median price per egg).</p>
+  <h2>Weekly history</h2>
+  <p>The dataset is refreshed automatically each week. Each row is one date's snapshot (cage-free % and median price per egg).</p>
   {hist_en}
 
   <div class="disclosure">Claude Code used for analysis and drafting.</div>

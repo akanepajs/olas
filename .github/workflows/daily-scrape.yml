@@ -1,0 +1,81 @@
+name: daily-scrape
+
+# Re-scrape Latvian retailer egg listings each day, regenerate the figures and
+# the page, append a dated row to the history series, and commit back. The push
+# to main triggers the GitHub Pages redeploy.
+
+on:
+  schedule:
+    - cron: '30 5 * * *'   # every day 05:30 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Share the 'pages' concurrency group with deploy-pages so the two never deploy
+# to the github-pages environment simultaneously (both use cancel-in-progress:false
+# so neither cancels the other; they serialize).
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Python deps
+        run: pip install -r scripts/requirements.txt
+
+      - name: Compute tag and run date
+        id: vars
+        run: |
+          echo "tag=$(date -u +%Y)-Q$(( ($(date -u +%-m)-1)/3 + 1 ))-LV" >> "$GITHUB_OUTPUT"
+          echo "date=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+
+      - name: Scrape Latvian retailers
+        working-directory: scraper
+        run: node run_scrape_lv.mjs "${{ steps.vars.outputs.tag }}" "${{ steps.vars.outputs.date }}"
+
+      - name: Render figures
+        run: python scripts/make_figures_lv.py "${{ steps.vars.outputs.tag }}"
+
+      - name: Build page
+        run: python scripts/build_olas_page.py "${{ steps.vars.outputs.tag }}"
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "olas-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes this run."
+          else
+            git commit -m "Daily egg-listings update ${{ steps.vars.outputs.date }}"
+            # Rebase onto any commit that landed since checkout, then push.
+            git pull --rebase --autostash origin main || true
+            git push
+          fi
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      - name: Deploy to Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

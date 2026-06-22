@@ -1,7 +1,7 @@
 retailer,total_listings,shell_egg_listings,organic,free_range,barn,caged,unknown,cage_free_listings,cage_free_share_strict_pct,cage_free_share_anchor_pct,median_price_per_egg,note
 Rimi,17,15,1,4,9,1,0,14,93,93,0.329,
 Barbora,12,9,2,1,6,0,0,9,100,100,0.289,
-top!,0,0,0,0,0,0,0,0,,,,top! (etop.lv) online catalogue is an Angular SPA behind a /v1 JSON API; egg listings not machine-retrievable in this pass. No listing-level data captured.
-Lidl,0,0,0,0,0,0,0,0,,,,Lidl Latvia (lidl.lv) has no online grocery store (marketing/flyer site only); no online shell-egg listings.
+top!,0,0,0,0,0,0,0,0,,,,"top! (etop.lv) is TOP's own-brand (TIP TOP) showcase, not a full online grocery: the eggs section has only one own-brand product (TIP TOP barn eggs, EU code 2, about 0.30 EUR/egg), so it is not comparable to a full assortment and is excluded."
+Lidl,2,2,0,0,2,0,0,2,100,100,0.18,
 Mego,0,0,0,0,0,0,0,0,,,,Mego (mego.lv) has no online store (informational site only); no egg catalogue.
 Elvi,0,0,0,0,0,0,0,0,,,,Elvi (elvi.lv) eggs page lists no shoppable products (WordPress promo/catalogue site); no listing-level data.
