@@ -97,39 +97,6 @@ async function appendHistory(date, summaryRows) {
   console.log(`History: ${hist.length} dated snapshot(s) (latest ${date}).`);
 }
 
-// Append the full product-level snapshot (shop, egg type, per-egg price, etc.) for
-// this date to a growing flat JSON series, so the complete data behind the figures
-// stays downloadable for every date (the per-tag raw files are overwritten daily).
-async function appendListingsHistory(date, allRows) {
-  const path = "data/history/listings_history.json";
-  let hist = [];
-  try {
-    hist = JSON.parse(await readFile(path, "utf8"));
-  } catch (e) {
-    if (e.code !== "ENOENT") throw new Error(`listings_history.json unreadable; refusing to overwrite: ${e.message}`);
-  }
-  const today = allRows
-    .filter(r => r.is_shell_egg)
-    .map(r => ({
-      date,
-      retailer: r.retailer,
-      name: r.name,
-      eu_code: r.eu_code,
-      production_label: r.production_label,
-      cage_free: r.cage_free,
-      price_eur: r.price_eur,
-      pack_count: r.pack_count,
-      price_per_egg: r.price_per_egg,
-    }));
-  hist = hist.filter(rec => rec.date !== date); // upsert: replace this date's rows
-  hist.push(...today);
-  hist.sort((a, b) => (a.date !== b.date ? (a.date < b.date ? -1 : 1) : a.retailer.localeCompare(b.retailer)));
-  await mkdir("data/history", { recursive: true });
-  await writeFile(path, JSON.stringify(hist, null, 2), "utf8");
-  const dates = new Set(hist.map(r => r.date));
-  console.log(`Listings history: ${hist.length} product-rows across ${dates.size} date(s), ${today.length} on ${date}.`);
-}
-
 async function main() {
   const tag = process.argv[2] || defaultTag();
   const runDate = process.argv[3] || new Date().toISOString().slice(0, 10);
@@ -240,7 +207,6 @@ async function main() {
   await writeFile(`data/summary/${tag}_summary.json`, JSON.stringify(summaryRows, null, 2), "utf8");
 
   await appendHistory(runDate, summaryRows);
-  await appendListingsHistory(runDate, all);
 
   console.log(`\nNational cage-free anchor: ${Math.round(ANCHOR * 100)}% (Latvia production capacity, Eglitis & Kanepajs 2026)`);
   console.log("Summary by retailer (chicken shell eggs only):");

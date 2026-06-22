@@ -23,7 +23,6 @@ from pathlib import Path
 
 NATIONAL_CF_PCT = 47
 REPO_URL = "https://github.com/akanepajs/olas"
-DATA_HISTORY_URL = "https://github.com/akanepajs/olas/blob/main/scraper/data/history/listings_history.json"
 OLAS_URL = "https://olas.kanepajs.eu"
 EGGS_URL = "https://eggs.kanepajs.eu"
 LV_REPORT_URL = "https://www.dzivniekubriviba.lv/assets/downloadable-assets/ekonomiska-analize-par-dejejvistu-sprostu-aizlieguma-ietekmi-latvija.pdf"
@@ -257,7 +256,7 @@ def build(tag, olas_dir):
   </ul>
 
   <h2>Vēsture</h2>
-  <p>Datu kopa tiek automātiski atjaunināta katru dienu. Tabulā zemāk ir kopsavilkums (bezsprostu % un mediānā cena par olu katram datumam). Pilnie produktu līmeņa dati par katru momentuzņēmumu (veikals, cena, olu veids katrai pozīcijai) ir lejupielādējami <a href="{DATA_HISTORY_URL}">kā JSON GitHub</a>.</p>
+  <p>Datu kopa tiek automātiski atjaunināta katru dienu. Katra rinda ir viena datuma momentuzņēmums (bezsprostu % un mediānā cena par olu).</p>
   {hist_lv}
 
   <div class="disclosure">Analīzei un teksta sagatavošanai izmantots Claude Code.</div>
@@ -308,7 +307,7 @@ def build(tag, olas_dir):
   </ul>
 
   <h2>History</h2>
-  <p>The dataset is refreshed automatically each day. The table below is a summary (cage-free % and median price per egg for each date). The full product-level data behind every snapshot (shop, price, egg type for each listing) is downloadable as <a href="{DATA_HISTORY_URL}">JSON on GitHub</a>.</p>
+  <p>The dataset is refreshed automatically each day. Each row is one date's snapshot (cage-free % and median price per egg).</p>
   {hist_en}
 
   <div class="disclosure">Claude Code used for analysis and drafting.</div>
