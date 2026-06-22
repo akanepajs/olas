@@ -80,6 +80,7 @@ def default_tag() -> str:
 
 def make_figure(summary_rows: list[dict], out: Path, tag: str, lang: str) -> None:
     s = STR[lang]
+    quarter = tag.replace("-LV", "")
     with_listings = [r for r in summary_rows if (r.get("shell_egg_listings") or 0) > 0]
     without = [r for r in summary_rows if (r.get("shell_egg_listings") or 0) == 0]
 
@@ -146,7 +147,7 @@ def make_figure(summary_rows: list[dict], out: Path, tag: str, lang: str) -> Non
     ax.set_xlim(0, 100)
     ax.set_ylim(n - 0.5, -1.4)
     ax.set_xlabel(s["mix_xlabel"])
-    ax.set_title(s["mix_title"])
+    ax.set_title(f"{s['mix_title']}  ·  {quarter}")
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     ax.grid(axis="x", alpha=0.25, linestyle=":")
@@ -173,6 +174,7 @@ def make_price_figure(raw_rows: list[dict], out: Path, tag: str, lang: str) -> N
     colored by EU production system. A short grey dash marks each retailer's median.
     """
     s = STR[lang]
+    quarter = tag.replace("-LV", "")
     # Same set the scraper takes the median over: every shell egg with a parseable
     # per-egg price (regardless of production code), so the chart median equals the
     # table's median_price_per_egg even if an unlabelled egg ever appears.
@@ -218,7 +220,7 @@ def make_price_figure(raw_rows: list[dict], out: Path, tag: str, lang: str) -> N
     ax.set_xlim(-0.6, len(shops) - 0.4 + 0.6)
     ax.set_ylim(0, max((r["price_per_egg"] for r in pts), default=1.0) * 1.12)
     ax.set_ylabel(s["price_ylabel"])
-    ax.set_title(s["price_title"])
+    ax.set_title(f"{s['price_title']}  ·  {quarter}")
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     ax.grid(axis="y", alpha=0.25, linestyle=":")

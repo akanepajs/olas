@@ -125,6 +125,7 @@ def build(tag, olas_dir):
     b64_mix_en = b64(f"fig_lv_listings_mix_en_{tag}.png")
     b64_price_lv = b64(f"fig_lv_price_per_egg_{tag}.png")
     b64_price_en = b64(f"fig_lv_price_per_egg_en_{tag}.png")
+    quarter = tag.replace("-LV", "")
 
     lrows = listing_rows(summary)
     srows = stub_rows(summary)
@@ -198,7 +199,7 @@ def build(tag, olas_dir):
 <!-- ===================== LATVIAN ===================== -->
 <div data-lang="lv" class="active">
   <h1>Bezsprostu olu īpatsvars Latvijas mazumtirgotāju sortimentā</h1>
-  <div class="subtitle">Tiešsaistes veikalu sortimenta uzskaite pa SKU. Pēdējie dati: {data_date} (atjaunināts katru nedēļu).</div>
+  <div class="subtitle">Tiešsaistes veikalu sortimenta uzskaite pa SKU, {quarter}. Pēdējie dati: {data_date} (atjaunināts katru nedēļu).</div>
 
   <div class="key-message">
     <strong>Galvenais secinājums</strong>
@@ -251,7 +252,7 @@ def build(tag, olas_dir):
 <!-- ===================== ENGLISH ===================== -->
 <div data-lang="en">
   <h1>Cage-free share of egg listings at Latvian retailers</h1>
-  <div class="subtitle">Online catalogue snapshot by SKU. Latest data: {data_date} (updated weekly).</div>
+  <div class="subtitle">Online catalogue snapshot by SKU, {quarter}. Latest data: {data_date} (updated weekly).</div>
 
   <div class="key-message">
     <strong>Headline</strong>
