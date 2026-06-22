@@ -32,15 +32,10 @@ SOURCE_URLS = {
 }
 
 LV_NOTES = {
-    "top!": "top! (etop.lv) ir TOP pašu zīmola (TIP TOP) produktu vietne, nevis pilns interneta veikals: olu sadaļā ir tikai viens pašu zīmola produkts (TIP TOP kūtī dētas, ES kods 2, aptuveni 0.30 €/ola), tāpēc tas nav salīdzināms ar pilnu sortimentu un nav iekļauts.",
+    "top!": "top! (etop.lv) tiešsaistes katalogs ir Angular lietotne aiz /v1 JSON saskarnes; olu pozīcijas šajā piegājienā nebija mašīnlasāmas.",
     "Lidl": "Lidl Latvijā (lidl.lv) nav tiešsaistes pārtikas veikala (tikai akciju/bukletu lapa); tiešsaistē olu pozīciju nav.",
     "Mego": "Mego (mego.lv) nav tiešsaistes veikala (tikai informatīva lapa); olu kataloga nav.",
     "Elvi": "Elvi (elvi.lv) olu lapā nav pērkamu produktu (WordPress informatīva/akciju lapa); pozīciju nav.",
-}
-
-# English note overrides (others fall back to the scraper stub's `note`).
-EN_NOTES = {
-    "top!": "top! (etop.lv) is TOP's own-brand (TIP TOP) showcase, not a full online grocery: the eggs section has only one own-brand product (TIP TOP barn eggs, EU code 2, about 0.30 EUR/egg), so it is not comparable to a full assortment and is excluded.",
 }
 
 
@@ -86,10 +81,7 @@ def table_html(rows, lang):
 def stub_list_html(rows, lang):
     items = []
     for r in rows:
-        if lang == "lv":
-            note = LV_NOTES.get(r["retailer"], r.get("note", ""))
-        else:
-            note = EN_NOTES.get(r["retailer"], r.get("note", ""))
+        note = LV_NOTES.get(r["retailer"], r.get("note", "")) if lang == "lv" else r.get("note", "")
         items.append(f"<li><strong>{r['retailer']}</strong>: {note}</li>")
     return "<ul>" + "".join(items) + "</ul>"
 
