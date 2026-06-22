@@ -35,7 +35,6 @@ RETAILER_ORDER = ["Rimi", "Barbora", "Lidl"]
 SOURCE_URLS = {
     "Rimi": "https://www.rimi.lv/e-veikals/lv/produkti/piena-produkti-un-olas/olas/c/SH-11-6",
     "Barbora": "https://barbora.lv/piena-produkti-un-olas/olas",
-    "Lidl": "https://www.lidl.lv/c/lv-LV/edieni-un-dzerieni/s10068374?category.id=10096079",
 }
 
 LV_NOTES = {
@@ -205,8 +204,6 @@ def build(tag, olas_dir):
     barb_cf = lk.get("Barbora", {}).get("cage_free_share_strict_pct", "n/a")
     rimi_med = fmt_eur(lk.get("Rimi", {}).get("median_price_per_egg"))
     barb_med = fmt_eur(lk.get("Barbora", {}).get("median_price_per_egg"))
-    lidl_cf = lk.get("Lidl", {}).get("cage_free_share_strict_pct", "n/a")
-    lidl_med = fmt_eur(lk.get("Lidl", {}).get("median_price_per_egg"))
 
     table_lv, table_en = table_html(lrows, "lv"), table_html(lrows, "en")
     stubs_lv, stubs_en = stub_list_html(srows, "lv"), stub_list_html(srows, "en")
@@ -219,7 +216,8 @@ def build(tag, olas_dir):
   <div class="subtitle">Tiešsaistes veikalu sortimenta uzskaite pa SKU. Pēdējie dati: {data_date} (atjaunināts katru dienu).</div>
 
   <div class="key-message">
-    Latvijas lielākie tiešsaistes pārtikas veikali pēc sortimenta vienību (SKU) skaita piedāvā gandrīz tikai bezsprostu olas: Rimi {rimi_cf}%, Barbora (Maxima) {barb_cf}%, Lidl {lidl_cf}%. Tas ir krietni virs valsts ražošanas bezsprostu īpatsvara (aptuveni {NATIONAL_CF_PCT}% no dējējvistu vietām; Eglītis un Kaņepājs, 2026). Šis ir pieejamības (plauktu klātbūtnes) rādītājs, nevis pārdošanas apjoma īpatsvars.
+    <strong>Galvenais secinājums</strong>
+    Latvijas lielākie tiešsaistes pārtikas veikali pēc sortimenta vienību (SKU) skaita piedāvā gandrīz tikai bezsprostu olas: Rimi {rimi_cf}%, Barbora (Maxima) {barb_cf}%. Tas ir krietni virs valsts ražošanas bezsprostu īpatsvara (aptuveni {NATIONAL_CF_PCT}% no dējējvistu vietām; Eglītis un Kaņepājs, 2026). Šis ir pieejamības (plauktu klātbūtnes) rādītājs, nevis pārdošanas apjoma īpatsvars.
   </div>
 
   <figure>
@@ -230,7 +228,7 @@ def build(tag, olas_dir):
   {table_lv}
 
   <h2>Cena par olu</h2>
-  <p>Cena par olu (pakas cena dalīta ar olu skaitu pakā, lai 6 un 10 olu iepakojumi būtu salīdzināmi). Bioloģiskās olas ir dārgākās; lētākās ir Lidl kūtī dētas olas. Mediānā: Rimi {rimi_med} €/olu, Barbora {barb_med} €/olu, Lidl {lidl_med} €/olu.</p>
+  <p>Cena par olu (pakas cena dalīta ar olu skaitu pakā, lai 6 un 10 olu iepakojumi būtu salīdzināmi). Sprostos dētas olas ir lētākās; bioloģiskās dārgākās. Mediānā: Rimi {rimi_med} €/olu, Barbora {barb_med} €/olu.</p>
   <figure>
     <img alt="Olu cena pa tirgotājiem un turēšanas veidu" src="data:image/png;base64,{b64_price_lv}">
     <figcaption>Katrs punkts ir viens produkts; krāsa = turēšanas veids (tāda pati kā augšējā attēlā). Pelēkā svītra: tirgotāja mediānā.</figcaption>
@@ -269,7 +267,8 @@ def build(tag, olas_dir):
   <div class="subtitle">Online catalogue snapshot by SKU. Latest data: {data_date} (updated daily).</div>
 
   <div class="key-message">
-    Latvia's large online grocers list almost only cage-free eggs by stock-keeping unit (SKU) count: Rimi {rimi_cf}%, Barbora (Maxima) {barb_cf}%, Lidl {lidl_cf}%. That is well above the national cage-free production share (about {NATIONAL_CF_PCT}% of laying-hen places; Eglitis and Kanepajs 2026). This is a shelf-presence indicator, not a sales-volume share.
+    <strong>Headline</strong>
+    Latvia's large online grocers list almost only cage-free eggs by stock-keeping unit (SKU) count: Rimi {rimi_cf}%, Barbora (Maxima) {barb_cf}%. That is well above the national cage-free production share (about {NATIONAL_CF_PCT}% of laying-hen places; Eglitis and Kanepajs 2026). This is a shelf-presence indicator, not a sales-volume share.
   </div>
 
   <figure>
@@ -280,7 +279,7 @@ def build(tag, olas_dir):
   {table_en}
 
   <h2>Price per egg</h2>
-  <p>Price per egg (pack price divided by the number of eggs per pack, so 6- and 10-egg packs compare fairly). Organic eggs are the dearest; Lidl's barn eggs are the cheapest overall. Medians: Rimi {rimi_med} EUR/egg, Barbora {barb_med} EUR/egg, Lidl {lidl_med} EUR/egg.</p>
+  <p>Price per egg (pack price divided by the number of eggs per pack, so 6- and 10-egg packs compare fairly). Caged eggs are the cheapest; organic the dearest. Medians: Rimi {rimi_med} EUR/egg, Barbora {barb_med} EUR/egg.</p>
   <figure>
     <img alt="Egg price by retailer and production system" src="data:image/png;base64,{b64_price_en}">
     <figcaption>Each point is one product; color = production system (same as the chart above). Grey dash: retailer median.</figcaption>
