@@ -1,5 +1,4 @@
 retailer,source,name,price_text,price_eur,pack_count,price_per_egg,eu_code,production_label,classify_source,is_shell_egg,cage_free,note,error
-Rimi,rimi_html,Olas Rimi Smart A/M Nr.3 sprostos dēt. 10gab.,1.99 EUR,1.99,10,0.199,3,caged,name_keyword,true,false,,
 Rimi,rimi_html,Olas Balticovo brīv.vis.A/LM Nr.1 10gab.,4.59 EUR,4.59,10,0.459,1,free-range,name_keyword,true,true,,
 Rimi,rimi_html,"Olas Rimi Iecavas kūtī dētas A/L No.2,10 gab.",3.29 EUR,3.29,10,0.329,2,barn,name_keyword,true,true,,
 Rimi,rimi_html,Olas Rimi kūtī dētas A/M Nr.2 15 gab.,3.99 EUR,3.99,15,0.266,2,barn,name_keyword,true,true,,
