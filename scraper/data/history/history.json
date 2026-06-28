@@ -153,5 +153,28 @@
         "median_price_per_egg": 0.18
       }
     }
+  },
+  {
+    "date": "2026-06-28",
+    "retailers": {
+      "Rimi": {
+        "n": 14,
+        "cage_free_share_strict_pct": 100,
+        "cage_free_share_anchor_pct": 100,
+        "median_price_per_egg": 0.364
+      },
+      "Barbora": {
+        "n": 9,
+        "cage_free_share_strict_pct": 100,
+        "cage_free_share_anchor_pct": 100,
+        "median_price_per_egg": 0.299
+      },
+      "Lidl": {
+        "n": 2,
+        "cage_free_share_strict_pct": 100,
+        "cage_free_share_anchor_pct": 100,
+        "median_price_per_egg": 0.18
+      }
+    }
   }
 ]
