@@ -42,7 +42,7 @@ SOURCE_URLS = {
 }
 
 LV_NOTES = {
-    "top!": "top! (etop.lv) ir TOP pašu zīmola (TIP TOP) produktu vietne, nevis pilns interneta veikals: olu sadaļā ir tikai viens pašu zīmola produkts (TIP TOP kūtī dētas, ES kods 2, aptuveni 0.30 €/olu), tāpēc tā nav salīdzināma ar pilnu sortimentu un nav iekļauta.",
+    "top!": "top! (etop.lv) ir TOP pašu zīmola (TIP TOP) produktu vietne, nevis pilns interneta veikals: olu sadaļā ir tikai viens pašu zīmola produkts (TIP TOP kūtī dētas, ES kods 2, aptuveni 0.30 €/ola), tāpēc tas nav salīdzināms ar pilnu sortimentu un nav iekļauts.",
     "Mego": "Mego (mego.lv) nav tiešsaistes veikala (tikai informatīva lapa); olu kataloga nav.",
     "Elvi": "Elvi (elvi.lv) olu lapā nav pērkamu produktu (WordPress informatīva/akciju lapa); pozīciju nav.",
 }
@@ -107,7 +107,7 @@ def fmt_eur(v):
 
 
 def table_html(rows, lang):
-    head_lv = ["Tirgotājs", "SKU (n)", "Bioloģiskās", "Brīvās", "Kūtī", "Sprostos", "Bezsprostu %", "Mediānā €/olu"]
+    head_lv = ["Tirgotājs", "SKU (n)", "Bioloģiskās", "Brīvās", "Kūtī", "Sprostos", "Bezsprostu %", "Mediānā €/ola"]
     head_en = ["Retailer", "SKUs (n)", "Organic", "Free-range", "Barn", "Caged", "Cage-free %", "Median €/egg"]
     head = head_lv if lang == "lv" else head_en
     th = "".join(f"<th>{h}</th>" for h in head)
@@ -150,7 +150,7 @@ def source_links_li(lang):
 
 def history_table_html(history, retailers, lang):
     date_h = "Datums" if lang == "lv" else "Date"
-    sub = (["n", "Bezspr. %", "€/olu"] if lang == "lv" else ["n", "Cage-free %", "€/egg"])
+    sub = (["n", "Bezspr. %", "€/ola"] if lang == "lv" else ["n", "Cage-free %", "€/egg"])
     top = f"<th rowspan='2'>{date_h}</th>" + "".join(f"<th colspan='3'>{r}</th>" for r in retailers)
     second = "".join("".join(f"<th>{s}</th>" for s in sub) for _ in retailers)
     rows_html = []
@@ -219,7 +219,7 @@ def build(tag, olas_dir):
     src_lv, src_en = source_links_li("lv"), source_links_li("en")
 
     body_lv = f"""  <h1>Bezsprostu olu īpatsvars Latvijas mazumtirgotāju sortimentā</h1>
-  <div class="subtitle">Tiešsaistes veikalu sortimenta uzskaite pēc SKU. Pēdējie dati: {data_date} (atjaunina katru dienu).</div>
+  <div class="subtitle">Tiešsaistes veikalu sortimenta uzskaite pa SKU. Pēdējie dati: {data_date} (atjaunināts katru dienu).</div>
 
   <div class="key-message">
     Latvijas lielākie tiešsaistes pārtikas veikali pēc sortimenta vienību (SKU) skaita piedāvā gandrīz tikai bezsprostu olas: Rimi {rimi_cf}%, Barbora (Maxima) {barb_cf}%, Lidl {lidl_cf}%. Tas ir krietni virs valsts ražošanas bezsprostu īpatsvara (aptuveni {NATIONAL_CF_PCT}% no dējējvistu vietām; Eglītis un Kaņepājs, 2026). Šis ir pieejamības (plauktu klātbūtnes) rādītājs, nevis pārdošanas apjoma īpatsvars.
@@ -227,7 +227,7 @@ def build(tag, olas_dir):
 
   <figure>
     <img alt="Bezsprostu olu īpatsvars Latvijas veikalos" src="data:image/png;base64,{b64_mix_lv}">
-    <figcaption>ES ražošanas kodu sadalījums pēc tirgotāja (0 bioloģiskās, 1 brīvās turēšanas, 2 kūtī dētas, 3 sprostos). Pārtrauktā līnija: valsts ražošanas bezsprostu īpatsvars aptuveni {NATIONAL_CF_PCT}%.</figcaption>
+    <figcaption>ES ražošanas kodu sadalījums pa tirgotājiem (0 bioloģiskās, 1 brīvās turēšanas, 2 kūtī dētas, 3 sprostos). Pārtrauktā līnija: valsts ražošanas bezsprostu īpatsvars aptuveni {NATIONAL_CF_PCT}%.</figcaption>
   </figure>
 
   {table_lv}
@@ -236,14 +236,14 @@ def build(tag, olas_dir):
   <p>Cena par olu (pakas cena dalīta ar olu skaitu pakā, lai 6 un 10 olu iepakojumi būtu salīdzināmi). Bioloģiskās olas ir dārgākās; lētākās ir Lidl kūtī dētas olas. Mediānā: Rimi {rimi_med} €/olu, Barbora {barb_med} €/olu, Lidl {lidl_med} €/olu.</p>
   <figure>
     <img alt="Olu cena pēc tirgotāja un turēšanas veida" src="data:image/png;base64,{b64_price_lv}">
-    <figcaption>Katrs punkts ir viens produkts; krāsa = turēšanas veids (tāda pati kā augšējā attēlā). Pelēkā svītra: tirgotāja mediāna.</figcaption>
+    <figcaption>Katrs punkts ir viens produkts; krāsa = turēšanas veids (tāda pati kā augšējā attēlā). Pelēkā svītra: tirgotāja mediānā.</figcaption>
   </figure>
 
   <h2>Metode</h2>
   <p>No katra tirgotāja tiešsaistes kataloga tika nolasītas visas vistu (čaumalas) olu pozīcijas un katra klasificēta pēc ES ražošanas koda (0 bioloģiskās, 1 brīvās turēšanas, 2 kūtī dētas, 3 sprostos), izmantojot olu marķējuma kodu (Nr.0/1/2/3) un/vai atslēgvārdus produkta nosaukumā (kūtī dētas, sprostos, brīvās turēšanas, eko/bio). Paipalu olas un olu produkti (olu baltums u.c.) izslēgti. <strong>Bezsprostu %</strong> = kodi 0/1/2 attiecībā pret visām vistu olu pozīcijām. Visām pozīcijām bija ražošanas marķējums (0 neklasificētu), tāpēc valsts īpatsvara korekcija rezultātu nemaina.</p>
 
   <h2>Sortimenta segums</h2>
-  <p>No sešiem lielajiem tīkliem trim ir mašīnlasāms tiešsaistes olu katalogs (Rimi, Barbora/Maxima un Lidl; Lidl piedāvā nelielu olu sortimentu). Pārējie:</p>
+  <p>No sešiem lielajiem tīkliem trīs ir mašīnlasāms tiešsaistes olu katalogs (Rimi, Barbora/Maxima un Lidl; Lidl piedāvā nelielu olu sortimentu). Pārējie:</p>
   {stubs_lv}
 
   <h2>Ierobežojumi</h2>
@@ -262,7 +262,7 @@ def build(tag, olas_dir):
   </ul>
 
   <h2>Vēsture</h2>
-  <p>Datu kopa tiek automātiski atjaunināta katru dienu. Tabulā zemāk ir kopsavilkums (bezsprostu % un mediānā cena par olu katram datumam). Pilnie produktu līmeņa dati par katru momentuzņēmumu (veikals, cena, olu veids katrai pozīcijai) ir lejupielādējami <a href="{DATA_HISTORY_URL}">kā JSON GitHub vietnē</a>.</p>
+  <p>Datu kopa tiek automātiski atjaunināta katru dienu. Tabulā zemāk ir kopsavilkums (bezsprostu % un mediānā cena par olu katram datumam). Pilnie produktu līmeņa dati par katru momentuzņēmumu (veikals, cena, olu veids katrai pozīcijai) ir lejupielādējami <a href="{DATA_HISTORY_URL}">kā JSON GitHub</a>.</p>
   {hist_lv}
 
   <div class="disclosure">Analīzei un teksta sagatavošanai izmantots Claude Code.</div>

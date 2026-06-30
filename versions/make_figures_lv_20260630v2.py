@@ -55,7 +55,7 @@ STR = {
         "price_median": "mediāna {med:.2f}",
         "no_price":     "Nav cenu datu",
         "codes":        {0: "0 bioloģiskās", 1: "1 brīvās turēšanas", 2: "2 kūtī dētas",
-                         3: "3 sprostos", None: "nezināmas"},
+                         3: "3 sprostos", None: "nezināms"},
     },
     "en": {
         "mix_title":    "Cage-free share of egg listings at Latvian retailers",

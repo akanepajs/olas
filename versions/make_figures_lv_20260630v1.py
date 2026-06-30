@@ -41,7 +41,6 @@ NATIONAL_CF_PCT = 47           # Latvia cage-free production capacity, 2026 (Egl
 
 # All user-facing figure text, per language. The figures are outward-facing
 # under Art's name, so no em dashes here (the middle dot separates title parts).
-# Latvian wording/grammar conventions for this site: see docs/latvian-style.md.
 STR = {
     "lv": {
         "mix_title":    "Bezsprostu olu īpatsvars Latvijas veikalos",
@@ -50,12 +49,12 @@ STR = {
         "ref_line":     "valsts ražošana\n~{n}% bezsprostu",
         "cf":           "  bezsprostu {strict}%",
         "cf_anchor":    "  bezsprostu {strict}% (korekcija {anchor}%)",
-        "price_title":  "Olu cena pēc tirgotāja un turēšanas veida",
+        "price_title":  "Olu cena pa tirgotājiem un turēšanas veidu",
         "price_ylabel": "Cena par olu (EUR)",
         "price_median": "mediāna {med:.2f}",
         "no_price":     "Nav cenu datu",
         "codes":        {0: "0 bioloģiskās", 1: "1 brīvās turēšanas", 2: "2 kūtī dētas",
-                         3: "3 sprostos", None: "nezināmas"},
+                         3: "3 sprostos", None: "nezināms"},
     },
     "en": {
         "mix_title":    "Cage-free share of egg listings at Latvian retailers",
