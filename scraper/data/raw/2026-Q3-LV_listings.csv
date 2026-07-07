@@ -30,6 +30,6 @@ Barbora,barbora_html,Vistu olas WELL DONE Eco M 10gab.,3.69 EUR,3.69,10,0.369,0,
 Barbora,barbora_html,Paipalu olas WELL DONE 12gab.,1.47 EUR,1.47,12,0.1225,,unknown,unknown,false,,,
 Barbora,barbora_html,Olas BALTICOVO Bio A 6gab.,3.13 EUR,3.13,6,0.5217,0,organic,name_keyword,true,true,,
 top!,external_only,,,,,,,n/a,n/a,,,"top! (etop.lv) is TOP's own-brand (TIP TOP) showcase, not a full online grocery: the eggs section has only one own-brand product (TIP TOP barn eggs, EU code 2, about 0.30 EUR/egg), so it is not comparable to a full assortment and is excluded.",
-Lidl,,,,,,,,n/a,n/a,,,,Lidl: __NUXT_DATA__ payload not found
+Lidl,lidl_api,"BALTICOVO Kūtī dētas vistu olas, 10 gab.",1.79 EUR,1.79,10,0.179,2,barn,name_keyword,true,true,,
 Mego,external_only,,,,,,,n/a,n/a,,,Mego (mego.lv) has no online store (informational site only); no egg catalogue.,
 Elvi,external_only,,,,,,,n/a,n/a,,,Elvi (elvi.lv) eggs page lists no shoppable products (WordPress promo/catalogue site); no listing-level data.,
