@@ -19,12 +19,16 @@ const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 const API = "https://www.lidl.lv/q/api/search?q=olas&fetchsize=48&locale=lv_LV&assortment=LV&version=v2.0.0";
 
 export async function scrape() {
-  // The WAF intermittently answers 406 to a request that succeeds seconds later
-  // with identical headers; one retry is enough to ride that out.
-  let r = await fetch(API, { headers: { "User-Agent": UA, "Accept": "application/json", "Accept-Language": "lv-LV,lv;q=0.9,en;q=0.8" } });
-  if (!r.ok) {
-    await new Promise(res => setTimeout(res, 5000));
-    r = await fetch(API, { headers: { "User-Agent": UA, "Accept": "application/json", "Accept-Language": "lv-LV,lv;q=0.9,en;q=0.8" } });
+  // The WAF intermittently answers 406 to requests that succeed later with
+  // identical headers, and the bad window can outlast a quick retry (observed:
+  // two attempts 5 s apart both 406, fine a minute later). Back off in growing
+  // steps before giving up.
+  const HEADERS = { "User-Agent": UA, "Accept": "application/json", "Accept-Language": "lv-LV,lv;q=0.9,en;q=0.8" };
+  let r = await fetch(API, { headers: HEADERS });
+  for (const waitMs of [10_000, 20_000, 40_000]) {
+    if (r.ok) break;
+    await new Promise(res => setTimeout(res, waitMs));
+    r = await fetch(API, { headers: HEADERS });
   }
   if (!r.ok) throw new Error(`HTTP ${r.status} on Lidl search API`);
   let d;
