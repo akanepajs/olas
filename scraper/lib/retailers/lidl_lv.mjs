@@ -1,70 +1,75 @@
 // Lidl Latvia (lidl.lv). lidl.lv publishes its standard in-store assortment as an
-// online catalogue (with prices) built on Nuxt: the eggs category page embeds a
-// `__NUXT_DATA__` payload (a flat, reference-indexed array) holding the product
-// objects. There is no separate purchase flow, but the listing + price data is
-// fully machine-readable, so this is a real (if small) shelf-presence dataset.
+// online catalogue (with prices). The site was relaunched around 2026-07-07: the
+// old locale-prefixed category URLs (/c/lv-LV/...) now redirect to locale-less
+// paths, products are no longer server-rendered into the __NUXT_DATA__ payload
+// (they load client-side via a ProductGridbox fragment), and the old eggs
+// category id (10096079) is dead in the new taxonomy. What still works is the
+// public search JSON API the fragment itself uses, so we query it for "olas"
+// and keep the rows whose title is an egg product.
 //
 // Lidl runs a deliberately limited assortment, so the egg category typically
-// holds only a couple of own/select-brand lines. We read the category, resolve
-// the Nuxt references, and emit one row per product with its pack price; the
-// runner derives the per-egg price from the "N gab." pack size folded into the
-// name. Lidl is intentionally NOT in the runner's fail-fast EXPECTED set: if this
-// parser ever breaks, the daily run should still publish Rimi/Barbora and let
-// Lidl's line gap, rather than freezing the whole site.
+// holds only a couple of own/select-brand lines. Search returns loosely related
+// products too (milk, butter, shrimp on a recent check), so a title filter is
+// required, and a genuine all-eggs delisting is indistinguishable from a filter
+// miss: both throw. Lidl is intentionally NOT in the runner's fail-fast EXPECTED
+// set: if this parser ever breaks, the daily run should still publish
+// Rimi/Barbora and let Lidl's line gap, rather than freezing the whole site.
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36";
-// Eggs category ("Olas") under food and drinks.
-const ROOT = "https://www.lidl.lv/c/lv-LV/edieni-un-dzerieni/s10068374?category.id=10096079";
+const API = "https://www.lidl.lv/q/api/search?q=olas&fetchsize=48&locale=lv_LV&assortment=LV&version=v2.0.0";
 
 export async function scrape() {
-  const r = await fetch(ROOT, { headers: { "User-Agent": UA, "Accept-Language": "lv-LV,lv;q=0.9,en;q=0.8" } });
-  if (!r.ok) throw new Error(`HTTP ${r.status} on Lidl eggs category`);
-  const html = await r.text();
+  // The WAF intermittently answers 406 to requests that succeed later with
+  // identical headers, and the bad window can outlast a quick retry (observed:
+  // two attempts 5 s apart both 406, fine a minute later). Back off in growing
+  // steps before giving up.
+  const HEADERS = { "User-Agent": UA, "Accept": "application/json", "Accept-Language": "lv-LV,lv;q=0.9,en;q=0.8" };
+  let r = await fetch(API, { headers: HEADERS });
+  for (const waitMs of [10_000, 20_000, 40_000]) {
+    if (r.ok) break;
+    await new Promise(res => setTimeout(res, waitMs));
+    r = await fetch(API, { headers: HEADERS });
+  }
+  if (!r.ok) throw new Error(`HTTP ${r.status} on Lidl search API`);
+  let d;
+  try { d = await r.json(); }
+  catch (e) { throw new Error(`Lidl: search API JSON parse failed (${e.message})`); }
 
-  const i = html.indexOf("__NUXT_DATA__");
-  if (i < 0) throw new Error("Lidl: __NUXT_DATA__ payload not found");
-  const start = html.indexOf(">", i) + 1;
-  const end = html.indexOf("</script>", start);
-  let arr;
-  try { arr = JSON.parse(html.slice(start, end)); }
-  catch (e) { throw new Error(`Lidl: __NUXT_DATA__ parse failed (${e.message})`); }
-
-  // Nuxt flat payload: object values are indices into the top-level array.
-  const deref = (v) => (Number.isInteger(v) && v >= 0 && v < arr.length) ? arr[v] : v;
-  const isObj = (v) => v && typeof v === "object" && !Array.isArray(v);
-
+  const items = Array.isArray(d.items) ? d.items : [];
   const out = [];
   const seen = new Set();
-  for (const x of arr) {
-    if (!isObj(x) || !Number.isInteger(x.canonicalPath)) continue;
-    const path = deref(x.canonicalPath);
-    if (typeof path !== "string" || !path.startsWith("/p/") || !("fullTitle" in x)) continue;
-    if (seen.has(path)) continue;
+  for (const it of items) {
+    if (it.resultClass !== "product") continue;
+    const g = it.gridbox && it.gridbox.data;
+    if (!g) continue;
+    const title = String(g.fullTitle || g.title || "");
+    // Keep only egg products: "olas"/"ola" as a word in the title. Search also
+    // returns unrelated groceries for q=olas; those never carry the word.
+    if (!/\bolas?\b/i.test(title)) continue;
+    const path = String(g.canonicalPath || g.canonicalUrl || "");
+    if (!path.startsWith("/p/") || seen.has(path)) continue;
     seen.add(path);
 
-    const title = deref(x.fullTitle);
     let price = null, baseText = "";
-    const pd = deref(x.price);
-    if (isObj(pd)) {
-      const p = deref(pd.price);
-      if (typeof p === "number") price = p;
-      const bp = deref(pd.basePrice);
-      if (isObj(bp)) baseText = deref(bp.text) || "";
+    const pd = g.price;
+    if (pd && typeof pd === "object") {
+      if (typeof pd.price === "number") price = pd.price;
+      if (pd.basePrice && typeof pd.basePrice === "object") baseText = String(pd.basePrice.text || "");
     }
     // Pack size ("10 gab.") lives in the price subtext, not the title; fold it into
     // the name so the runner's packCount() can derive the per-egg price.
-    const pm = String(baseText).match(/(\d+)\s*gab/i);
+    const pm = baseText.match(/(\d+)\s*gab/i);
     const pack = pm ? Number(pm[1]) : null;
-    const name = (pack && !/gab/i.test(String(title))) ? `${title}, ${pack} gab.` : String(title);
+    const name = (pack && !/gab/i.test(title)) ? `${title}, ${pack} gab.` : title;
     const id = path.split("/").pop().replace(/^p/, "");
 
     out.push({
       retailer: "Lidl",
-      source: "lidl_html",
+      source: "lidl_api",
       sku_id: `lidl_${id}`,
       product_id: id,
       name,
-      brand: "",
+      brand: (g.brand && g.brand.name) || "",
       price_text: price != null ? `${price} EUR` : "",
       unit_price: null,
       category_path: path,
@@ -72,6 +77,6 @@ export async function scrape() {
     });
   }
 
-  if (out.length === 0) throw new Error("Lidl: no egg products parsed (page structure may have changed)");
+  if (out.length === 0) throw new Error("Lidl: no egg products in search results (assortment gap or API/filter change)");
   return out;
 }

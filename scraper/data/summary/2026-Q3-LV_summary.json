@@ -46,18 +46,18 @@
   },
   {
     "retailer": "Lidl",
-    "total_listings": 0,
-    "shell_egg_listings": 0,
+    "total_listings": 1,
+    "shell_egg_listings": 1,
     "organic": 0,
     "free_range": 0,
-    "barn": 0,
+    "barn": 1,
     "caged": 0,
     "unknown": 0,
-    "cage_free_listings": 0,
-    "cage_free_share_strict_pct": null,
-    "cage_free_share_anchor_pct": null,
-    "median_price_per_egg": null,
-    "note": "Lidl: __NUXT_DATA__ payload not found"
+    "cage_free_listings": 1,
+    "cage_free_share_strict_pct": 100,
+    "cage_free_share_anchor_pct": 100,
+    "median_price_per_egg": 0.179,
+    "note": ""
   },
   {
     "retailer": "Mego",

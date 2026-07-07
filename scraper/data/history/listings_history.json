@@ -4401,6 +4401,17 @@
   },
   {
     "date": "2026-07-07",
+    "retailer": "Lidl",
+    "name": "BALTICOVO Kūtī dētas vistu olas, 10 gab.",
+    "eu_code": 2,
+    "production_label": "barn",
+    "cage_free": true,
+    "price_eur": 1.79,
+    "pack_count": 10,
+    "price_per_egg": 0.179
+  },
+  {
+    "date": "2026-07-07",
     "retailer": "Rimi",
     "name": "Olas Rimi Smart A/M Nr.3 sprostos dēt. 10gab.",
     "eu_code": 3,
