@@ -22,26 +22,6 @@
   {
     "retailer": "Rimi",
     "source": "rimi_html",
-    "sku_id": "rimi_4002861",
-    "product_id": "4002861",
-    "name": "Olas Balticovo brīv.vis.A/LM Nr.1 10gab.",
-    "brand": "",
-    "price_text": "2.79 EUR",
-    "unit_price": null,
-    "category_code": "SH-11-6-18",
-    "tipo_produccion": "",
-    "eu_code": 1,
-    "classify_source": "name_keyword",
-    "production_label": "free-range",
-    "is_shell_egg": true,
-    "cage_free": true,
-    "price_eur": 2.79,
-    "pack_count": 10,
-    "price_per_egg": 0.279
-  },
-  {
-    "retailer": "Rimi",
-    "source": "rimi_html",
     "sku_id": "rimi_815899",
     "product_id": "815899",
     "name": "Olas Rimi kūtī dētas A/M Nr.2 15 gab.",
@@ -58,6 +38,26 @@
     "price_eur": 3.29,
     "pack_count": 15,
     "price_per_egg": 0.2193
+  },
+  {
+    "retailer": "Rimi",
+    "source": "rimi_html",
+    "sku_id": "rimi_4002861",
+    "product_id": "4002861",
+    "name": "Olas Balticovo brīv.vis.A/LM Nr.1 10gab.",
+    "brand": "",
+    "price_text": "2.79 EUR",
+    "unit_price": null,
+    "category_code": "SH-11-6-18",
+    "tipo_produccion": "",
+    "eu_code": 1,
+    "classify_source": "name_keyword",
+    "production_label": "free-range",
+    "is_shell_egg": true,
+    "cage_free": true,
+    "price_eur": 2.79,
+    "pack_count": 10,
+    "price_per_egg": 0.279
   },
   {
     "retailer": "Rimi",
@@ -360,10 +360,10 @@
   {
     "retailer": "Barbora",
     "source": "barbora_html",
-    "sku_id": "barbora_000000000001369441",
-    "product_id": "000000000001369441",
-    "name": "Kūtī dētas olas WELL DONE L izm.10gab.",
-    "price_text": "2.76 EUR",
+    "sku_id": "barbora_000000000001316999",
+    "product_id": "000000000001316999",
+    "name": "Kūtī dētas olas WELL DONE 10gab.",
+    "price_text": "2.67 EUR",
     "unit_price": null,
     "category_path": "piena-produkti-un-olas/olas-/vistu-olas",
     "tipo_produccion": "",
@@ -372,9 +372,9 @@
     "production_label": "barn",
     "is_shell_egg": true,
     "cage_free": true,
-    "price_eur": 2.76,
+    "price_eur": 2.67,
     "pack_count": 10,
-    "price_per_egg": 0.276
+    "price_per_egg": 0.267
   },
   {
     "retailer": "Barbora",
@@ -531,10 +531,10 @@
   {
     "retailer": "Barbora",
     "source": "barbora_html",
-    "sku_id": "barbora_000000000001316999",
-    "product_id": "000000000001316999",
-    "name": "Kūtī dētas olas WELL DONE 10gab.",
-    "price_text": "2.67 EUR",
+    "sku_id": "barbora_000000000001369441",
+    "product_id": "000000000001369441",
+    "name": "Kūtī dētas olas WELL DONE L izm.10gab.",
+    "price_text": "2.76 EUR",
     "unit_price": null,
     "category_path": "piena-produkti-un-olas/olas-/vistu-olas",
     "tipo_produccion": "",
@@ -543,9 +543,9 @@
     "production_label": "barn",
     "is_shell_egg": true,
     "cage_free": true,
-    "price_eur": 2.67,
+    "price_eur": 2.76,
     "pack_count": 10,
-    "price_per_egg": 0.267
+    "price_per_egg": 0.276
   },
   {
     "retailer": "Barbora",
