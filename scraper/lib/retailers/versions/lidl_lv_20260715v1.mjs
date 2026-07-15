@@ -14,24 +14,16 @@
 // miss: both throw. Lidl is intentionally NOT in the runner's fail-fast EXPECTED
 // set: if this parser ever breaks, the daily run should still publish
 // Rimi/Barbora and let Lidl's line gap, rather than freezing the whole site.
-//
-// 2026-07-15: since ~2026-07-08 the WAF answers 406 to any request carrying an
-// "Accept: application/json" header (the exact same URL returns 200 without it,
-// verified from a residential IP), so no Accept header is sent. Independently,
-// the relaunched catalogue holds only ~95 promotional products with no eggs at
-// all (product sitemap has none; /h/olas/h10096079 renders "nekas netika
-// atrasts"), so until Lidl relists eggs online this scraper reaches the API
-// fine and then throws the "no egg products" error below by design.
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36";
-const API = "https://www.lidl.lv/q/api/search?q=olas&fetchsize=48&locale=lv_LV&assortment=LV&version=v2.1.0";
+const API = "https://www.lidl.lv/q/api/search?q=olas&fetchsize=48&locale=lv_LV&assortment=LV&version=v2.0.0";
 
 export async function scrape() {
-  // The WAF also intermittently answers 406 to requests that succeed later with
+  // The WAF intermittently answers 406 to requests that succeed later with
   // identical headers, and the bad window can outlast a quick retry (observed:
   // two attempts 5 s apart both 406, fine a minute later). Back off in growing
   // steps before giving up.
-  const HEADERS = { "User-Agent": UA, "Accept-Language": "lv-LV,lv;q=0.9,en;q=0.8" };
+  const HEADERS = { "User-Agent": UA, "Accept": "application/json", "Accept-Language": "lv-LV,lv;q=0.9,en;q=0.8" };
   let r = await fetch(API, { headers: HEADERS });
   for (const waitMs of [10_000, 20_000, 40_000]) {
     if (r.ok) break;

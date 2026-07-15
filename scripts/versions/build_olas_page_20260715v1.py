@@ -38,7 +38,7 @@ RETAILER_ORDER = ["Rimi", "Barbora", "Lidl"]
 SOURCE_URLS = {
     "Rimi": "https://www.rimi.lv/e-veikals/lv/produkti/piena-produkti-un-olas/olas/c/SH-11-6",
     "Barbora": "https://barbora.lv/piena-produkti-un-olas/olas",
-    "Lidl": "https://www.lidl.lv/h/olas/h10096079",
+    "Lidl": "https://www.lidl.lv/c/lv-LV/edieni-un-dzerieni/s10068374?category.id=10096079",
 }
 
 LV_NOTES = {
@@ -99,12 +99,7 @@ def listing_rows(rows):
 
 
 def stub_rows(rows):
-    # Chains without a machine-readable catalogue. A scraped retailer whose data
-    # is currently gapped (e.g. Lidl with no eggs online since the 2026-07 site
-    # relaunch) is NOT a stub: it stays in the coverage sentence and the history
-    # table, and the gap is explained by the conditional sentence in the body.
-    return [r for r in rows
-            if (r.get("shell_egg_listings") or 0) == 0 and r["retailer"] not in RETAILER_ORDER]
+    return [r for r in rows if (r.get("shell_egg_listings") or 0) == 0]
 
 
 def fmt_eur(v):
@@ -209,25 +204,12 @@ def build(tag, olas_dir):
     lrows = listing_rows(summary)
     srows = stub_rows(summary)
     lk = {r["retailer"]: r for r in summary}
-    # A retailer with no current listings has null shares/medians in the summary
-    # (Lidl since 2026-07-08: no eggs in the relaunched online catalogue), so the
-    # headline sentences list only retailers that actually have data.
-    cf_labels = [("Rimi", "Rimi"), ("Barbora", "Barbora (Maxima)"), ("Lidl", "Lidl")]
-    cf_list = ", ".join(
-        f"{label} {lk[key]['cage_free_share_strict_pct']}%"
-        for key, label in cf_labels
-        if lk.get(key, {}).get("cage_free_share_strict_pct") is not None
-    )
-    med_items = [(k, lk.get(k, {}).get("median_price_per_egg")) for k in RETAILER_ORDER]
-    med_list_lv = ", ".join(f"{k} {fmt_eur(v)} €/olu" for k, v in med_items if v is not None)
-    med_list_en = ", ".join(f"{k} {fmt_eur(v)} EUR/egg" for k, v in med_items if v is not None)
-    lidl_live = (lk.get("Lidl", {}).get("shell_egg_listings") or 0) > 0
-    cheap_lv = ("Bioloģiskās olas ir dārgākās; lētākās ir Lidl kūtī dētas olas."
-                if lidl_live else "Bioloģiskās olas ir dārgākās.")
-    cheap_en = ("Organic eggs are the dearest; Lidl's barn eggs are the cheapest overall."
-                if lidl_live else "Organic eggs are the dearest.")
-    lidl_gap_lv = "" if lidl_live else " Lidl tiešsaistes katalogā šobrīd olu pozīciju nav."
-    lidl_gap_en = "" if lidl_live else " Lidl's online catalogue currently lists no egg products."
+    rimi_cf = lk.get("Rimi", {}).get("cage_free_share_strict_pct", "n/a")
+    barb_cf = lk.get("Barbora", {}).get("cage_free_share_strict_pct", "n/a")
+    rimi_med = fmt_eur(lk.get("Rimi", {}).get("median_price_per_egg"))
+    barb_med = fmt_eur(lk.get("Barbora", {}).get("median_price_per_egg"))
+    lidl_cf = lk.get("Lidl", {}).get("cage_free_share_strict_pct", "n/a")
+    lidl_med = fmt_eur(lk.get("Lidl", {}).get("median_price_per_egg"))
 
     table_lv, table_en = table_html(lrows, "lv"), table_html(lrows, "en")
     stubs_lv, stubs_en = stub_list_html(srows, "lv"), stub_list_html(srows, "en")
@@ -240,7 +222,7 @@ def build(tag, olas_dir):
   <div class="subtitle">Tiešsaistes veikalu sortimenta uzskaite pēc SKU. Pēdējie dati: {data_date} (atjaunina katru dienu).</div>
 
   <div class="key-message">
-    Latvijas lielākie tiešsaistes pārtikas veikali pēc sortimenta vienību (SKU) skaita piedāvā gandrīz tikai bezsprostu olas: {cf_list}. Tas ir krietni virs valsts ražošanas bezsprostu īpatsvara (aptuveni {NATIONAL_CF_PCT}% no dējējvistu vietām; Eglītis un Kaņepājs, 2026). Šis ir pieejamības (plauktu klātbūtnes) rādītājs, nevis pārdošanas apjoma īpatsvars.
+    Latvijas lielākie tiešsaistes pārtikas veikali pēc sortimenta vienību (SKU) skaita piedāvā gandrīz tikai bezsprostu olas: Rimi {rimi_cf}%, Barbora (Maxima) {barb_cf}%, Lidl {lidl_cf}%. Tas ir krietni virs valsts ražošanas bezsprostu īpatsvara (aptuveni {NATIONAL_CF_PCT}% no dējējvistu vietām; Eglītis un Kaņepājs, 2026). Šis ir pieejamības (plauktu klātbūtnes) rādītājs, nevis pārdošanas apjoma īpatsvars.
   </div>
 
   <figure>
@@ -251,7 +233,7 @@ def build(tag, olas_dir):
   {table_lv}
 
   <h2>Cena par olu</h2>
-  <p>Cena par olu (pakas cena dalīta ar olu skaitu pakā, lai 6 un 10 olu iepakojumi būtu salīdzināmi). {cheap_lv} Mediānā: {med_list_lv}.</p>
+  <p>Cena par olu (pakas cena dalīta ar olu skaitu pakā, lai 6 un 10 olu iepakojumi būtu salīdzināmi). Bioloģiskās olas ir dārgākās; lētākās ir Lidl kūtī dētas olas. Mediānā: Rimi {rimi_med} €/olu, Barbora {barb_med} €/olu, Lidl {lidl_med} €/olu.</p>
   <figure>
     <img alt="Olu cena pēc tirgotāja un turēšanas veida" src="data:image/png;base64,{b64_price_lv}">
     <figcaption>Katrs punkts ir viens produkts; krāsa = turēšanas veids (tāda pati kā augšējā attēlā). Pelēkā svītra: tirgotāja mediāna.</figcaption>
@@ -261,7 +243,7 @@ def build(tag, olas_dir):
   <p>No katra tirgotāja tiešsaistes kataloga tika nolasītas visas vistu (čaumalas) olu pozīcijas un katra klasificēta pēc ES ražošanas koda (0 bioloģiskās, 1 brīvās turēšanas, 2 kūtī dētas, 3 sprostos), izmantojot olu marķējuma kodu (Nr.0/1/2/3) un/vai atslēgvārdus produkta nosaukumā (kūtī dētas, sprostos, brīvās turēšanas, eko/bio). Paipalu olas un olu produkti (olu baltums u.c.) izslēgti. <strong>Bezsprostu %</strong> = kodi 0/1/2 attiecībā pret visām vistu olu pozīcijām. Visām pozīcijām bija ražošanas marķējums (0 neklasificētu), tāpēc valsts īpatsvara korekcija rezultātu nemaina.</p>
 
   <h2>Sortimenta segums</h2>
-  <p>No sešiem lielajiem tīkliem trim ir mašīnlasāms tiešsaistes olu katalogs (Rimi, Barbora/Maxima un Lidl; Lidl piedāvā nelielu olu sortimentu).{lidl_gap_lv} Pārējie:</p>
+  <p>No sešiem lielajiem tīkliem trim ir mašīnlasāms tiešsaistes olu katalogs (Rimi, Barbora/Maxima un Lidl; Lidl piedāvā nelielu olu sortimentu). Pārējie:</p>
   {stubs_lv}
 
   <h2>Ierobežojumi</h2>
@@ -290,7 +272,7 @@ def build(tag, olas_dir):
   <div class="subtitle">Online catalogue snapshot by SKU. Latest data: {data_date} (updated daily).</div>
 
   <div class="key-message">
-    Latvia's large online grocers list almost only cage-free eggs by stock-keeping unit (SKU) count: {cf_list}. That is well above the national cage-free production share (about {NATIONAL_CF_PCT}% of laying-hen places; Eglitis and Kanepajs 2026). This is a shelf-presence indicator, not a sales-volume share.
+    Latvia's large online grocers list almost only cage-free eggs by stock-keeping unit (SKU) count: Rimi {rimi_cf}%, Barbora (Maxima) {barb_cf}%, Lidl {lidl_cf}%. That is well above the national cage-free production share (about {NATIONAL_CF_PCT}% of laying-hen places; Eglitis and Kanepajs 2026). This is a shelf-presence indicator, not a sales-volume share.
   </div>
 
   <figure>
@@ -301,7 +283,7 @@ def build(tag, olas_dir):
   {table_en}
 
   <h2>Price per egg</h2>
-  <p>Price per egg (pack price divided by the number of eggs per pack, so 6- and 10-egg packs compare fairly). {cheap_en} Medians: {med_list_en}.</p>
+  <p>Price per egg (pack price divided by the number of eggs per pack, so 6- and 10-egg packs compare fairly). Organic eggs are the dearest; Lidl's barn eggs are the cheapest overall. Medians: Rimi {rimi_med} EUR/egg, Barbora {barb_med} EUR/egg, Lidl {lidl_med} EUR/egg.</p>
   <figure>
     <img alt="Egg price by retailer and production system" src="data:image/png;base64,{b64_price_en}">
     <figcaption>Each point is one product; color = production system (same as the chart above). Grey dash: retailer median.</figcaption>
@@ -311,7 +293,7 @@ def build(tag, olas_dir):
   <p>Every chicken shell-egg listing in each retailer's online catalogue was read and classified by EU production code (0 organic, 1 free-range, 2 barn, 3 caged), using the egg-marking code in the name (Nr.0/1/2/3) and/or production keywords (kuti detas = barn, sprostos = caged, brivas turesanas = free-range, eko/bio = organic). Quail eggs and egg products (egg white, etc.) were excluded. <strong>Cage-free %</strong> = codes 0/1/2 over all chicken shell-egg listings. Every listing carried a production label (0 unknowns), so the national-anchor adjustment leaves the figure unchanged.</p>
 
   <h2>Coverage</h2>
-  <p>Of six large chains, three have a machine-readable online egg catalogue (Rimi, Barbora/Maxima, and Lidl; Lidl carries a small egg range).{lidl_gap_en} The others:</p>
+  <p>Of six large chains, three have a machine-readable online egg catalogue (Rimi, Barbora/Maxima, and Lidl; Lidl carries a small egg range). The others:</p>
   {stubs_en}
 
   <h2>Limitations</h2>
