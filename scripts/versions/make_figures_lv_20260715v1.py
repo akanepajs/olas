@@ -39,19 +39,14 @@ CODE_COLOR = {0: COLOR_ORGANIC, 1: COLOR_FREE_RANGE, 2: COLOR_BARN, 3: COLOR_CAG
 
 NATIONAL_CF_PCT = 47           # Latvia cage-free production capacity, 2026 (Eglitis & Kanepajs 2026)
 
-# Retailers the scraper reads; a zero-listing row for one of these is a data
-# gap in an existing catalogue, not a missing catalogue.
-SCRAPED = {"Rimi", "Barbora", "Lidl"}
-
 # All user-facing figure text, per language. The figures are outward-facing
 # under Art's name, so no em dashes here (the middle dot separates title parts).
 # Latvian wording/grammar conventions for this site: see docs/latvian-style.md.
 STR = {
     "lv": {
         "mix_title":    "Bezsprostu olu īpatsvars Latvijas veikalos",
-        "mix_xlabel":   "Olas pēc vistu turēšanas veida, īpatsvars (%)",
+        "mix_xlabel":   "Vistu (čaumalas) olu pozīciju īpatsvars (%)",
         "no_catalogue": "nav tiešsaistes olu kataloga",
-        "no_eggs_now":  "tiešsaistes katalogā šobrīd nav olu",
         "ref_line":     "valsts ražošana\n~{n}% bezsprostu",
         "cf":           "  bezsprostu {strict}%",
         "cf_anchor":    "  bezsprostu {strict}% (korekcija {anchor}%)",
@@ -66,7 +61,6 @@ STR = {
         "mix_title":    "Cage-free share of egg listings at Latvian retailers",
         "mix_xlabel":   "Share of chicken shell-egg listings (%)",
         "no_catalogue": "no online egg catalogue",
-        "no_eggs_now":  "no eggs in the online catalogue at present",
         "ref_line":     "national production\n~{n}% cage-free",
         "cf":           "  cage-free {strict}%",
         "cf_anchor":    "  cage-free {strict}% (anchor {anchor}%)",
@@ -106,12 +100,9 @@ def make_figure(summary_rows: list[dict], out: Path, tag: str, lang: str) -> Non
 
     for yi, r in zip(y, rows):
         if (r.get("shell_egg_listings") or 0) == 0:
-            # No data: light grey full-width hatch + label. A scraped retailer
-            # whose catalogue currently has no eggs (Lidl since the 2026-07
-            # relaunch) gets a distinct label from chains with no catalogue.
-            label = s["no_eggs_now"] if r["retailer"] in SCRAPED else s["no_catalogue"]
+            # No online catalogue: light grey full-width hatch + label.
             ax.barh(yi, 100, color="#f2f2f0", edgecolor="#dddddd", linewidth=0.6)
-            ax.text(50, yi, label, ha="center", va="center",
+            ax.text(50, yi, s["no_catalogue"], ha="center", va="center",
                     fontsize=8.5, color="#999999", style="italic")
             continue
         segs = [

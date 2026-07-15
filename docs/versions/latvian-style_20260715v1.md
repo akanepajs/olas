@@ -108,7 +108,6 @@ Pick one form and use it everywhere:
 | 6 | `build_olas_page.py` L42 (`LV_NOTES` top!) | `tas nav salīdzināms ... iekļauts` vs feminine `vietne`; optionally `tā ... salīdzināma ... iekļauta` | low | FIXED 2026-06-30 |
 | 7 | site-wide | `€/ola` vs `€/olu`; `pa SKU` vs `pēc SKU skaita`; `sadalījums pa tirgotājiem` (R7) | consistency | FIXED 2026-06-30 |
 | 8 | `make_figures_lv.py` L57 (legend) | `nezināms` (masc sg) vs other codes feminine plural | low | FIXED 2026-06-30 |
-| 9 | `make_figures_lv.py` `mix_xlabel` | `Vistu (čaumalas) olu pozīciju īpatsvars (%)` read awkwardly (stacked genitives); Art's rewording to `Olas pēc vistu turēšanas veida, īpatsvars (%)` (R1-conformant) | med | FIXED 2026-07-15 |
 
 The rest of the page (key message, method, limitations, sources, history,
 disclosure, and all `LV_NOTES`) reads as correct and idiomatic.
