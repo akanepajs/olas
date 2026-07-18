@@ -1,17 +1,17 @@
 [
   {
     "retailer": "Rimi",
-    "total_listings": 15,
-    "shell_egg_listings": 13,
+    "total_listings": 16,
+    "shell_egg_listings": 14,
     "organic": 1,
     "free_range": 3,
-    "barn": 8,
+    "barn": 9,
     "caged": 1,
     "unknown": 0,
-    "cage_free_listings": 12,
-    "cage_free_share_strict_pct": 92,
-    "cage_free_share_anchor_pct": 92,
-    "median_price_per_egg": 0.369,
+    "cage_free_listings": 13,
+    "cage_free_share_strict_pct": 93,
+    "cage_free_share_anchor_pct": 93,
+    "median_price_per_egg": 0.337,
     "note": ""
   },
   {
