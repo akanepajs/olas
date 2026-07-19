@@ -570,5 +570,22 @@
         "median_price_per_egg": 0.276
       }
     }
+  },
+  {
+    "date": "2026-07-19",
+    "retailers": {
+      "Rimi": {
+        "n": 14,
+        "cage_free_share_strict_pct": 93,
+        "cage_free_share_anchor_pct": 93,
+        "median_price_per_egg": 0.337
+      },
+      "Barbora": {
+        "n": 11,
+        "cage_free_share_strict_pct": 100,
+        "cage_free_share_anchor_pct": 100,
+        "median_price_per_egg": 0.276
+      }
+    }
   }
 ]
