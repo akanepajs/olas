@@ -12,8 +12,8 @@ Rimi,rimi_html,Paipalu olas Rimi 18gab.,2.21 EUR,2.21,18,0.1228,,unknown,unknown
 Rimi,rimi_html,Olas Rimi Smart kūtī dētas A/M Nr.2 10gab.,2.4 EUR,2.4,10,0.24,2,barn,name_keyword,true,true,,
 Rimi,rimi_html,Olas Rimi kūtī dētas A/L Nr.2 10 gab.,3.05 EUR,3.05,10,0.305,2,barn,name_keyword,true,true,,
 Rimi,rimi_html,Olas Sprīdīši A/ML Nr.1 10 gab.,4.62 EUR,4.62,10,0.462,1,free-range,egg_code_number,true,true,,
-Rimi,rimi_html,Olas brīvos apstākļos dētas A/LMS Nr.1 10 gb.,4.16 EUR,4.16,10,0.416,1,free-range,name_keyword,true,true,,
 Rimi,rimi_html,Olas Oluksne kūtī dētas A/LM Nr.2 10gab.,4.06 EUR,4.06,10,0.406,2,barn,name_keyword,true,true,,
+Rimi,rimi_html,Olas brīvos apstākļos dētas A/LMS Nr.1 10 gb.,4.16 EUR,4.16,10,0.416,1,free-range,name_keyword,true,true,,
 Rimi,rimi_html,Olas kūtī dētas A/LM Nr.2 10 gab,4.16 EUR,4.16,10,0.416,2,barn,name_keyword,true,true,,
 Barbora,barbora_html,Kūtī dētas olas 10gab.,1.84 EUR,1.84,10,0.184,2,barn,name_keyword,true,true,,
 Barbora,barbora_html,Kūtī dētas olas BALTICOVO Latvijas A L/M 12gab.,2.77 EUR,2.77,12,0.2308,2,barn,name_keyword,true,true,,
@@ -30,6 +30,6 @@ Barbora,barbora_html,Kūtī dētas olas BALTICOVO S izm. 10gab.,1.69 EUR,1.69,10
 Barbora,barbora_html,Brīvi turētu vistu olas WELL DONE 10gab.,2.69 EUR,2.69,10,0.269,1,free-range,name_keyword,true,true,,
 Barbora,barbora_html,Vistu olas WELL DONE Eco M 10gab.,3.19 EUR,3.19,10,0.319,0,organic,name_keyword,true,true,,
 top!,external_only,,,,,,,n/a,n/a,,,"top! (etop.lv) is TOP's own-brand (TIP TOP) showcase, not a full online grocery: the eggs section has only one own-brand product (TIP TOP barn eggs, EU code 2, about 0.30 EUR/egg), so it is not comparable to a full assortment and is excluded.",
-Lidl,lidl_api,"ALESTO SELECTION Kūtī dētas vistu olas, 10 gab.",1.79 EUR,1.79,10,0.179,2,barn,name_keyword,true,true,,
+Lidl,,,,,,,,n/a,n/a,,,,Lidl: no egg products in search results (assortment gap or API/filter change)
 Mego,external_only,,,,,,,n/a,n/a,,,Mego (mego.lv) has no online store (informational site only); no egg catalogue.,
 Elvi,external_only,,,,,,,n/a,n/a,,,Elvi (elvi.lv) eggs page lists no shoppable products (WordPress promo/catalogue site); no listing-level data.,
