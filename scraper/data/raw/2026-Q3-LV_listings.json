@@ -26,7 +26,7 @@
     "product_id": "815899",
     "name": "Olas Rimi kūtī dētas A/M Nr.2 15 gab.",
     "brand": "",
-    "price_text": "4.25 EUR",
+    "price_text": "3.19 EUR",
     "unit_price": null,
     "category_code": "SH-11-6-19",
     "tipo_produccion": "",
@@ -35,9 +35,9 @@
     "production_label": "barn",
     "is_shell_egg": true,
     "cage_free": true,
-    "price_eur": 4.25,
+    "price_eur": 3.19,
     "pack_count": 15,
-    "price_per_egg": 0.2833
+    "price_per_egg": 0.2127
   },
   {
     "retailer": "Rimi",
@@ -166,7 +166,7 @@
     "product_id": "953461",
     "name": "Olu baltums Balticovo Premium 500g",
     "brand": "",
-    "price_text": "1.99 EUR",
+    "price_text": "1.69 EUR",
     "unit_price": null,
     "category_code": "SH-11-6-16",
     "tipo_produccion": "",
@@ -175,7 +175,7 @@
     "production_label": "unknown",
     "is_shell_egg": false,
     "cage_free": null,
-    "price_eur": 1.99,
+    "price_eur": 1.69,
     "pack_count": null,
     "price_per_egg": null
   },
@@ -262,26 +262,6 @@
   {
     "retailer": "Rimi",
     "source": "rimi_html",
-    "sku_id": "rimi_966689",
-    "product_id": "966689",
-    "name": "Olas Oluksne kūtī dētas A/LM Nr.2 10gab.",
-    "brand": "",
-    "price_text": "4.06 EUR",
-    "unit_price": null,
-    "category_code": "SH-11-6-19",
-    "tipo_produccion": "",
-    "eu_code": 2,
-    "classify_source": "name_keyword",
-    "production_label": "barn",
-    "is_shell_egg": true,
-    "cage_free": true,
-    "price_eur": 4.06,
-    "pack_count": 10,
-    "price_per_egg": 0.406
-  },
-  {
-    "retailer": "Rimi",
-    "source": "rimi_html",
     "sku_id": "rimi_4007406",
     "product_id": "4007406",
     "name": "Olas brīvos apstākļos dētas A/LMS Nr.1 10 gb.",
@@ -298,6 +278,26 @@
     "price_eur": 4.16,
     "pack_count": 10,
     "price_per_egg": 0.416
+  },
+  {
+    "retailer": "Rimi",
+    "source": "rimi_html",
+    "sku_id": "rimi_966689",
+    "product_id": "966689",
+    "name": "Olas Oluksne kūtī dētas A/LM Nr.2 10gab.",
+    "brand": "",
+    "price_text": "4.06 EUR",
+    "unit_price": null,
+    "category_code": "SH-11-6-19",
+    "tipo_produccion": "",
+    "eu_code": 2,
+    "classify_source": "name_keyword",
+    "production_label": "barn",
+    "is_shell_egg": true,
+    "cage_free": true,
+    "price_eur": 4.06,
+    "pack_count": 10,
+    "price_per_egg": 0.406
   },
   {
     "retailer": "Rimi",
@@ -382,7 +382,7 @@
     "sku_id": "barbora_000000000001316999",
     "product_id": "000000000001316999",
     "name": "Kūtī dētas olas WELL DONE 10gab.",
-    "price_text": "2.19 EUR",
+    "price_text": "2.49 EUR",
     "unit_price": null,
     "category_path": "piena-produkti-un-olas/olas-/vistu-olas",
     "tipo_produccion": "",
@@ -391,9 +391,9 @@
     "production_label": "barn",
     "is_shell_egg": true,
     "cage_free": true,
-    "price_eur": 2.19,
+    "price_eur": 2.49,
     "pack_count": 10,
-    "price_per_egg": 0.219
+    "price_per_egg": 0.249
   },
   {
     "retailer": "Barbora",
@@ -496,7 +496,7 @@
     "sku_id": "barbora_000000000000561798",
     "product_id": "000000000000561798",
     "name": "Kūtī dētas olas ZEMNIEKU A kategorija 10gab.",
-    "price_text": "2.69 EUR",
+    "price_text": "1.65 EUR",
     "unit_price": null,
     "category_path": "piena-produkti-un-olas/olas-/vistu-olas",
     "tipo_produccion": "",
@@ -505,9 +505,9 @@
     "production_label": "barn",
     "is_shell_egg": true,
     "cage_free": true,
-    "price_eur": 2.69,
+    "price_eur": 1.65,
     "pack_count": 10,
-    "price_per_egg": 0.269
+    "price_per_egg": 0.165
   },
   {
     "retailer": "Barbora",
@@ -534,7 +534,7 @@
     "sku_id": "barbora_000000000001399443",
     "product_id": "000000000001399443",
     "name": "Kūtī dētas olas BALTICOVO S izm. 10gab.",
-    "price_text": "1.69 EUR",
+    "price_text": "1.89 EUR",
     "unit_price": null,
     "category_path": "piena-produkti-un-olas/olas-/vistu-olas",
     "tipo_produccion": "",
@@ -543,9 +543,9 @@
     "production_label": "barn",
     "is_shell_egg": true,
     "cage_free": true,
-    "price_eur": 1.69,
+    "price_eur": 1.89,
     "pack_count": 10,
-    "price_per_egg": 0.169
+    "price_per_egg": 0.189
   },
   {
     "retailer": "Barbora",
