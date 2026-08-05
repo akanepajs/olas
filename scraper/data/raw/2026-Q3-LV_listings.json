@@ -282,26 +282,6 @@
   {
     "retailer": "Rimi",
     "source": "rimi_html",
-    "sku_id": "rimi_4005090",
-    "product_id": "4005090",
-    "name": "Olas Oluksne O A/L Nr.2 18gab.",
-    "brand": "",
-    "price_text": "3.99 EUR",
-    "unit_price": null,
-    "category_code": "SH-11-6-19",
-    "tipo_produccion": "",
-    "eu_code": 2,
-    "classify_source": "egg_code_number",
-    "production_label": "barn",
-    "is_shell_egg": true,
-    "cage_free": true,
-    "price_eur": 3.99,
-    "pack_count": 18,
-    "price_per_egg": 0.2217
-  },
-  {
-    "retailer": "Rimi",
-    "source": "rimi_html",
     "sku_id": "rimi_4007406",
     "product_id": "4007406",
     "name": "Olas brīvos apstākļos dētas A/LMS Nr.1 10 gb.",
@@ -606,7 +586,7 @@
     "product_id": "10046245",
     "name": "BALTICOVO Kūtī dētas vistu olas, 10 gab.",
     "brand": "BALTICOVO",
-    "price_text": "1.79 EUR",
+    "price_text": "1.59 EUR",
     "unit_price": null,
     "category_path": "/p/balticovo-kuti-detas-vistu-olas/p10046245",
     "tipo_produccion": "",
@@ -615,9 +595,9 @@
     "production_label": "barn",
     "is_shell_egg": true,
     "cage_free": true,
-    "price_eur": 1.79,
+    "price_eur": 1.59,
     "pack_count": 10,
-    "price_per_egg": 0.179
+    "price_per_egg": 0.159
   },
   {
     "retailer": "Mego",
