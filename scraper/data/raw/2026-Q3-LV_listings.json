@@ -26,7 +26,7 @@
     "product_id": "815899",
     "name": "Olas Rimi kūtī dētas A/M Nr.2 15 gab.",
     "brand": "",
-    "price_text": "3.49 EUR",
+    "price_text": "2.99 EUR",
     "unit_price": null,
     "category_code": "SH-11-6-19",
     "tipo_produccion": "",
@@ -35,9 +35,9 @@
     "production_label": "barn",
     "is_shell_egg": true,
     "cage_free": true,
-    "price_eur": 3.49,
+    "price_eur": 2.99,
     "pack_count": 15,
-    "price_per_egg": 0.2327
+    "price_per_egg": 0.1993
   },
   {
     "retailer": "Rimi",
@@ -418,25 +418,6 @@
   {
     "retailer": "Barbora",
     "source": "barbora_html",
-    "sku_id": "barbora_000000000001369441",
-    "product_id": "000000000001369441",
-    "name": "Kūtī dētas olas WELL DONE L izm.10gab.",
-    "price_text": "2.55 EUR",
-    "unit_price": null,
-    "category_path": "piena-produkti-un-olas/olas-/vistu-olas",
-    "tipo_produccion": "",
-    "eu_code": 2,
-    "classify_source": "name_keyword",
-    "production_label": "barn",
-    "is_shell_egg": true,
-    "cage_free": true,
-    "price_eur": 2.55,
-    "pack_count": 10,
-    "price_per_egg": 0.255
-  },
-  {
-    "retailer": "Barbora",
-    "source": "barbora_html",
     "sku_id": "barbora_000000000001316999",
     "product_id": "000000000001316999",
     "name": "Kūtī dētas olas WELL DONE 10gab.",
@@ -452,6 +433,25 @@
     "price_eur": 2.49,
     "pack_count": 10,
     "price_per_egg": 0.249
+  },
+  {
+    "retailer": "Barbora",
+    "source": "barbora_html",
+    "sku_id": "barbora_000000000001375434",
+    "product_id": "000000000001375434",
+    "name": "Vistu olu baltums BALTICOVO 500g",
+    "price_text": "1.39 EUR",
+    "unit_price": null,
+    "category_path": "piena-produkti-un-olas/olas-/vistu-olas",
+    "tipo_produccion": "",
+    "eu_code": null,
+    "classify_source": "unknown",
+    "production_label": "unknown",
+    "is_shell_egg": false,
+    "cage_free": null,
+    "price_eur": 1.39,
+    "pack_count": null,
+    "price_per_egg": null
   },
   {
     "retailer": "Barbora",
@@ -535,7 +535,7 @@
     "sku_id": "barbora_000000000000561798",
     "product_id": "000000000000561798",
     "name": "Kūtī dētas olas ZEMNIEKU A kategorija 10gab.",
-    "price_text": "2.69 EUR",
+    "price_text": "1.79 EUR",
     "unit_price": null,
     "category_path": "piena-produkti-un-olas/olas-/vistu-olas",
     "tipo_produccion": "",
@@ -544,9 +544,9 @@
     "production_label": "barn",
     "is_shell_egg": true,
     "cage_free": true,
-    "price_eur": 2.69,
+    "price_eur": 1.79,
     "pack_count": 10,
-    "price_per_egg": 0.269
+    "price_per_egg": 0.179
   },
   {
     "retailer": "Barbora",
@@ -554,7 +554,7 @@
     "sku_id": "barbora_000000000001314172",
     "product_id": "000000000001314172",
     "name": "Kūtī dētas olas BALTICOVO 10gab.",
-    "price_text": "3.49 EUR",
+    "price_text": "1.79 EUR",
     "unit_price": null,
     "category_path": "piena-produkti-un-olas/olas-/vistu-olas",
     "tipo_produccion": "",
@@ -563,9 +563,9 @@
     "production_label": "barn",
     "is_shell_egg": true,
     "cage_free": true,
-    "price_eur": 3.49,
+    "price_eur": 1.79,
     "pack_count": 10,
-    "price_per_egg": 0.349
+    "price_per_egg": 0.179
   },
   {
     "retailer": "Barbora",
@@ -608,21 +608,21 @@
   {
     "retailer": "Barbora",
     "source": "barbora_html",
-    "sku_id": "barbora_000000000001375434",
-    "product_id": "000000000001375434",
-    "name": "Vistu olu baltums BALTICOVO 500g",
-    "price_text": "1.39 EUR",
+    "sku_id": "barbora_000000000001369441",
+    "product_id": "000000000001369441",
+    "name": "Kūtī dētas olas WELL DONE L izm.10gab.",
+    "price_text": "2.55 EUR",
     "unit_price": null,
     "category_path": "piena-produkti-un-olas/olas-/vistu-olas",
     "tipo_produccion": "",
-    "eu_code": null,
-    "classify_source": "unknown",
-    "production_label": "unknown",
-    "is_shell_egg": false,
-    "cage_free": null,
-    "price_eur": 1.39,
-    "pack_count": null,
-    "price_per_egg": null
+    "eu_code": 2,
+    "classify_source": "name_keyword",
+    "production_label": "barn",
+    "is_shell_egg": true,
+    "cage_free": true,
+    "price_eur": 2.55,
+    "pack_count": 10,
+    "price_per_egg": 0.255
   },
   {
     "retailer": "top!",
