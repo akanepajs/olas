@@ -39,30 +39,42 @@ function extractProductList(html) {
 
 // One-line description of a response that yielded no products, so a red CI run
 // shows whether Barbora returned an error code, a block/challenge page, or a
-// normal page without the product-list marker.
-function describe(url, status, html) {
+// normal page without the product-list marker. For a refused request the
+// Cloudflare headers say whether it was a challenge ("cf-mitigated: challenge")
+// or a plain block, and the cf-ray id locates it in Cloudflare's logs.
+function describe(url, status, html, headers) {
   const slug = url.replace("https://barbora.lv/", "");
   if (html == null) return typeof status === "number" ? `${slug}: HTTP ${status}` : `${slug}: ${status}`;
   const t = html.match(/<title>([^<]{0,80})/i);
   const marker = html.includes("window.b_productList = ") ? "marker present" : "no b_productList marker";
-  return `${slug}: HTTP ${status}, ${html.length} chars, ${marker}, title "${t ? t[1].trim() : ""}"`;
+  const cf = headers
+    ? ["server", "cf-mitigated", "cf-ray"].filter(h => headers.get(h)).map(h => `${h}=${headers.get(h)}`).join(" ")
+    : "";
+  return `${slug}: HTTP ${status}, ${html.length} chars, ${marker}, title "${t ? t[1].trim() : ""}"${cf ? `, ${cf}` : ""}`;
 }
 
 // Fetch one category page and parse it, retrying when the response is not OK or
 // yields no products. 2026-09-26: a single run got nothing from both pages while
 // a re-run 8 minutes later (same runner type) got the usual 15 products; the
 // old code discarded the HTTP status, so the cause was unrecoverable.
+// 2026-10-02: Cloudflare answered 403 to all six GitHub-runner attempts over ~2
+// minutes while the same request from a residential IP got 200, and a re-run
+// ~20 minutes later succeeded. The body of a refused response is now read too,
+// so the log shows what kind of refusal it was. Longer waits live in the
+// workflow (daily-scrape.yml re-runs the whole scrape after 10 and 20 minutes).
 async function fetchProducts(url, waits) {
   const tries = [];
   for (let attempt = 0; ; attempt++) {
-    let status = "network error", html = null, products = [];
+    let status = "network error", html = null, headers = null, products = [];
     try {
       const r = await fetch(url, { headers: { "User-Agent": UA, "Accept-Language": "lv-LV,lv;q=0.9,en;q=0.8" } });
       status = r.status;
-      if (r.ok) { html = await r.text(); products = extractProductList(html); }
+      headers = r.headers;
+      html = await r.text();
+      if (r.ok) products = extractProductList(html);
     } catch (e) { status = `network error (${e.message})`; }
     if (products.length) return { products, tries };
-    tries.push(describe(url, status, html));
+    tries.push(describe(url, status, html, headers));
     if (attempt >= waits.length) return { products, tries };
     await new Promise(res => setTimeout(res, waits[attempt]));
   }
