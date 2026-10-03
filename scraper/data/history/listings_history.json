@@ -29669,17 +29669,6 @@
   {
     "date": "2026-10-03",
     "retailer": "Barbora",
-    "name": "Vistu olas WELL DONE Eco M 10gab.",
-    "eu_code": 0,
-    "production_label": "organic",
-    "cage_free": true,
-    "price_eur": 3.19,
-    "pack_count": 10,
-    "price_per_egg": 0.319
-  },
-  {
-    "date": "2026-10-03",
-    "retailer": "Barbora",
     "name": "Kūtī dētas olas BALTICOVO Lielās Brokastu 10gab.",
     "eu_code": 2,
     "production_label": "barn",
@@ -29687,6 +29676,17 @@
     "price_eur": 2.79,
     "pack_count": 10,
     "price_per_egg": 0.279
+  },
+  {
+    "date": "2026-10-03",
+    "retailer": "Barbora",
+    "name": "Vistu olas WELL DONE Eco M 10gab.",
+    "eu_code": 0,
+    "production_label": "organic",
+    "cage_free": true,
+    "price_eur": 3.19,
+    "pack_count": 10,
+    "price_per_egg": 0.319
   },
   {
     "date": "2026-10-03",
