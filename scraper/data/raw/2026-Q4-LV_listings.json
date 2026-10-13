@@ -405,7 +405,7 @@
     "sku_id": "barbora_000000000001314172",
     "product_id": "000000000001314172",
     "name": "Kūtī dētas olas BALTICOVO 10gab.",
-    "price_text": "3.49 EUR",
+    "price_text": "1.69 EUR",
     "unit_price": null,
     "category_path": "piena-produkti-un-olas/olas-/vistu-olas",
     "tipo_produccion": "",
@@ -414,9 +414,9 @@
     "production_label": "barn",
     "is_shell_egg": true,
     "cage_free": true,
-    "price_eur": 3.49,
+    "price_eur": 1.69,
     "pack_count": 10,
-    "price_per_egg": 0.349
+    "price_per_egg": 0.169
   },
   {
     "retailer": "Barbora",
