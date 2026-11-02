@@ -645,7 +645,7 @@
     "source": "lidl_api",
     "sku_id": "lidl_11474570",
     "product_id": "11474570",
-    "name": "Kūtī dētas vistu olas, 1 gab.",
+    "name": "Kūtī dētas vistu olas, 10 gab.",
     "brand": "",
     "price_text": "1.69 EUR",
     "unit_price": null,
@@ -657,8 +657,8 @@
     "is_shell_egg": true,
     "cage_free": true,
     "price_eur": 1.69,
-    "pack_count": 1,
-    "price_per_egg": 1.69
+    "pack_count": 10,
+    "price_per_egg": 0.169
   },
   {
     "retailer": "Mego",
