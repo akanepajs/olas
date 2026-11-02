@@ -16,6 +16,6 @@ export async function scrape() {
     retailer: "top!",
     source: "external_only",
     name: null,
-    note: "top! (etop.lv) is TOP's own-brand (TIP TOP) showcase, not a full online grocery: the eggs section has only one own-brand product (TIP TOP barn eggs, EU code 2, about 0.30 EUR/egg), so it is not comparable to a full assortment and is excluded.",
+    note: "top! (etop.lv) is TOP's own-brand (TIP TOP) showcase, not a full online grocery: the eggs section has only one own-brand product (TIP TOP barn eggs, EU code 2), so it is not comparable to a full assortment and is excluded.",
   }];
 }

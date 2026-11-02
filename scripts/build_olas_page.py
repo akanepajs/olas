@@ -42,14 +42,14 @@ SOURCE_URLS = {
 }
 
 LV_NOTES = {
-    "top!": "top! (etop.lv) ir TOP pašu zīmola (TIP TOP) produktu vietne, nevis pilns interneta veikals: olu sadaļā ir tikai viens pašu zīmola produkts (TIP TOP kūtī dētas, ES kods 2, aptuveni 0.30 €/olu), tāpēc tā nav salīdzināma ar pilnu sortimentu un nav iekļauta.",
+    "top!": "top! (etop.lv) ir TOP pašu zīmola (TIP TOP) produktu vietne, nevis pilns interneta veikals: olu sadaļā ir tikai viens pašu zīmola produkts (TIP TOP kūtī dētas, ES kods 2), tāpēc tā nav salīdzināma ar pilnu sortimentu un nav iekļauta.",
     "Mego": "Mego (mego.lv) nav tiešsaistes veikala (tikai informatīva lapa); olu kataloga nav.",
     "Elvi": "Elvi (elvi.lv) olu lapā nav pērkamu produktu (WordPress informatīva/akciju lapa); pozīciju nav.",
 }
 
 # English note overrides (others fall back to the scraper stub's `note`).
 EN_NOTES = {
-    "top!": "top! (etop.lv) is TOP's own-brand (TIP TOP) showcase, not a full online grocery: the eggs section has only one own-brand product (TIP TOP barn eggs, EU code 2, about 0.30 EUR/egg), so it is not comparable to a full assortment and is excluded.",
+    "top!": "top! (etop.lv) is TOP's own-brand (TIP TOP) showcase, not a full online grocery: the eggs section has only one own-brand product (TIP TOP barn eggs, EU code 2), so it is not comparable to a full assortment and is excluded.",
 }
 
 CSS = """<style>
