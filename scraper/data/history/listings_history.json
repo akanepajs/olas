@@ -37816,5 +37816,16 @@
     "price_eur": 2.99,
     "pack_count": 10,
     "price_per_egg": 0.299
+  },
+  {
+    "date": "2026-11-02",
+    "retailer": "top!",
+    "name": "KŪTĪ DĒTAS OLAS TIP TOP NR.2 M/L IZM. 10GAB.",
+    "eu_code": 2,
+    "production_label": "barn",
+    "cage_free": true,
+    "price_eur": 2.39,
+    "pack_count": 10,
+    "price_per_egg": 0.239
   }
 ]

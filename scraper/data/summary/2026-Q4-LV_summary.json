@@ -31,18 +31,18 @@
   },
   {
     "retailer": "top!",
-    "total_listings": 0,
-    "shell_egg_listings": 0,
+    "total_listings": 1,
+    "shell_egg_listings": 1,
     "organic": 0,
     "free_range": 0,
-    "barn": 0,
+    "barn": 1,
     "caged": 0,
     "unknown": 0,
-    "cage_free_listings": 0,
-    "cage_free_share_strict_pct": null,
-    "cage_free_share_anchor_pct": null,
-    "median_price_per_egg": null,
-    "note": "top! (etop.lv) is TOP's own-brand (TIP TOP) showcase, not a full online grocery: the eggs section has only one own-brand product (TIP TOP barn eggs, EU code 2, about 0.30 EUR/egg), so it is not comparable to a full assortment and is excluded."
+    "cage_free_listings": 1,
+    "cage_free_share_strict_pct": 100,
+    "cage_free_share_anchor_pct": 100,
+    "median_price_per_egg": 0.239,
+    "note": ""
   },
   {
     "retailer": "Lidl",
@@ -87,6 +87,6 @@
     "cage_free_share_strict_pct": null,
     "cage_free_share_anchor_pct": null,
     "median_price_per_egg": null,
-    "note": "Elvi (elvi.lv) eggs page lists no shoppable products (WordPress promo/catalogue site); no listing-level data."
+    "note": "Elvi (elvi.lv) eggs page shows only one expired promo item (Balticovo, 18 eggs, 0.17 EUR/egg, undated) with no housing type, so it cannot be classified and is not counted."
   }
 ]
