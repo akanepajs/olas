@@ -41,7 +41,7 @@ NATIONAL_CF_PCT = 47           # Latvia cage-free production capacity, 2026 (Egl
 
 # Retailers the scraper reads; a zero-listing row for one of these is a data
 # gap in an existing catalogue, not a missing catalogue.
-SCRAPED = {"Rimi", "Barbora", "Lidl"}
+SCRAPED = {"Rimi", "Barbora", "Lidl", "top!"}
 
 # All user-facing figure text, per language. The figures are outward-facing
 # under Art's name, so no em dashes here (the middle dot separates title parts).

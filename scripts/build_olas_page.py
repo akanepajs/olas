@@ -31,7 +31,7 @@ OLAS_URL = "https://olas.kanepajs.eu"
 EGGS_URL = "https://eggs.kanepajs.eu"
 LV_REPORT_URL = "https://www.dzivniekubriviba.lv/assets/downloadable-assets/ekonomiska-analize-par-dejejvistu-sprostu-aizlieguma-ietekmi-latvija.pdf"
 EU_STANDARDS_URL = "https://agriculture.ec.europa.eu/farming/animal-products/eggs_en"
-RETAILER_ORDER = ["Rimi", "Barbora", "Lidl"]
+RETAILER_ORDER = ["Rimi", "Barbora", "Lidl", "top!"]
 
 # Online catalogues the scraper reads (the actual scraped sources, surfaced as
 # clickable links on the page).
@@ -39,18 +39,16 @@ SOURCE_URLS = {
     "Rimi": "https://www.rimi.lv/e-veikals/lv/produkti/piena-produkti-un-olas/olas/c/SH-11-6",
     "Barbora": "https://barbora.lv/piena-produkti-un-olas/olas",
     "Lidl": "https://www.lidl.lv/h/olas/h10096079",
+    "top!": "https://etop.lv/lv/top-produkti",
 }
 
 LV_NOTES = {
-    "top!": "top! (etop.lv) ir TOP pašu zīmola (TIP TOP) produktu vietne, nevis pilns interneta veikals: olu sadaļā ir tikai viens pašu zīmola produkts (TIP TOP kūtī dētas, ES kods 2), tāpēc tā nav salīdzināma ar pilnu sortimentu un nav iekļauta.",
     "Mego": "Mego (mego.lv) nav tiešsaistes veikala (tikai informatīva lapa); olu kataloga nav.",
-    "Elvi": "Elvi (elvi.lv) olu lapā nav pērkamu produktu (WordPress informatīva/akciju lapa); pozīciju nav.",
+    "Elvi": "Elvi (elvi.lv) olu lapā ir tikai viena novecojusi akcijas pozīcija (Balticovo, 18 gab., 0.17 €/olu, akcija beigusies, datums nav norādīts) bez turēšanas veida, tāpēc to nevar klasificēt un tā nav iekļauta.",
 }
 
 # English note overrides (others fall back to the scraper stub's `note`).
-EN_NOTES = {
-    "top!": "top! (etop.lv) is TOP's own-brand (TIP TOP) showcase, not a full online grocery: the eggs section has only one own-brand product (TIP TOP barn eggs, EU code 2), so it is not comparable to a full assortment and is excluded.",
-}
+EN_NOTES = {}
 
 CSS = """<style>
   :root {
@@ -258,12 +256,20 @@ def build(tag, olas_dir):
     # A retailer with no current listings has null shares/medians in the summary
     # (Lidl since 2026-07-08: no eggs in the relaunched online catalogue), so the
     # headline sentences list only retailers that actually have data.
-    cf_labels = [("Rimi", "Rimi"), ("Barbora", "Barbora (Maxima)"), ("Lidl", "Lidl")]
+    cf_labels = [("Rimi", "Rimi"), ("Barbora", "Barbora (Maxima)"), ("Lidl", "Lidl"), ("top!", "top!")]
+    # A share resting on a single SKU says so inline (Lidl and top! list one egg
+    # product online).
     cf_list = ", ".join(
         f"{label} {lk[key]['cage_free_share_strict_pct']}%"
+        + (" (n=1)" if lk[key].get("shell_egg_listings") == 1 else "")
         for key, label in cf_labels
         if lk.get(key, {}).get("cage_free_share_strict_pct") is not None
     )
+    single = [k for k in RETAILER_ORDER if lk.get(k, {}).get("shell_egg_listings") == 1]
+    single_lv = (f"<li>{' un '.join(single)} tiešsaistē ir tikai viena olu pozīcija, tāpēc to bezsprostu īpatsvars un mediānā cena balstās uz vienu produktu un var neatspoguļot visu veikala plauktu"
+                 + (" (top! vietne rāda tikai TOP pašu zīmola TIP TOP olas)" if "top!" in single else "") + ".</li>") if single else ""
+    single_en = (f"<li>{' and '.join(single)} list only one egg product online, so their cage-free share and median price rest on a single product and may not reflect the whole store shelf"
+                 + (" (etop.lv shows only TOP's own TIP TOP brand)" if "top!" in single else "") + ".</li>") if single else ""
     med_items = [(k, lk.get(k, {}).get("median_price_per_egg")) for k in RETAILER_ORDER]
     med_list_lv = ", ".join(f"{k} {fmt_eur(v)} €/olu" for k, v in med_items if v is not None)
     med_list_en = ", ".join(f"{k} {fmt_eur(v)} EUR/egg" for k, v in med_items if v is not None)
@@ -305,12 +311,13 @@ def build(tag, olas_dir):
   <p>No katra tirgotāja tiešsaistes kataloga tika nolasītas visas vistu (čaumalas) olu pozīcijas un katra klasificēta pēc ES ražošanas koda (0 bioloģiskās, 1 brīvās turēšanas, 2 kūtī dētas, 3 sprostos), izmantojot olu marķējuma kodu (Nr.0/1/2/3) un/vai atslēgvārdus produkta nosaukumā (kūtī dētas, sprostos, brīvās turēšanas, eko/bio). Paipalu olas un olu produkti (olu baltums u.c.) izslēgti. <strong>Bezsprostu %</strong> = kodi 0/1/2 attiecībā pret visām vistu olu pozīcijām. Visām pozīcijām bija ražošanas marķējums (0 neklasificētu), tāpēc valsts īpatsvara korekcija rezultātu nemaina.</p>
 
   <h2>Sortimenta segums</h2>
-  <p>No sešiem lielajiem tīkliem trim ir mašīnlasāms tiešsaistes olu katalogs (Rimi, Barbora/Maxima un Lidl; Lidl piedāvā nelielu olu sortimentu).{lidl_gap_lv} Pārējie:</p>
+  <p>No sešiem lielajiem tīkliem četriem ir mašīnlasāms tiešsaistes olu katalogs (Rimi, Barbora/Maxima, Lidl un top!; Lidl piedāvā nelielu olu sortimentu, un top! vietne rāda tikai TOP pašu zīmola olas).{lidl_gap_lv} Pārējie:</p>
   {stubs_lv}
 
   <h2>Ierobežojumi</h2>
   <ul>
     <li>Šis ir plauktu klātbūtnes rādītājs pēc SKU skaita, nevis pārdošanas apjoma īpatsvars. Tirgotājs ar 90% bezsprostu SKU joprojām var pārdot daudz sprostos dētu olu, ja lētākās, liela apjoma olas ir sprostos dētas.</li>
+    {single_lv}
     <li>{NATIONAL_CF_PCT}% atsauce ir ražošanas jaudas (dējējvistu vietu) īpatsvars, nevis mazumtirdzniecības apjoms.</li>
     <li>Cena ir norādītā cena (var ietvert akcijas) dalīta ar olu skaitu; nav svērta pēc pārdotā apjoma.</li>
   </ul>
@@ -355,12 +362,13 @@ def build(tag, olas_dir):
   <p>Every chicken shell-egg listing in each retailer's online catalogue was read and classified by EU production code (0 organic, 1 free-range, 2 barn, 3 caged), using the egg-marking code in the name (Nr.0/1/2/3) and/or production keywords (kuti detas = barn, sprostos = caged, brivas turesanas = free-range, eko/bio = organic). Quail eggs and egg products (egg white, etc.) were excluded. <strong>Cage-free %</strong> = codes 0/1/2 over all chicken shell-egg listings. Every listing carried a production label (0 unknowns), so the national-anchor adjustment leaves the figure unchanged.</p>
 
   <h2>Coverage</h2>
-  <p>Of six large chains, three have a machine-readable online egg catalogue (Rimi, Barbora/Maxima, and Lidl; Lidl carries a small egg range).{lidl_gap_en} The others:</p>
+  <p>Of six large chains, four have a machine-readable online egg catalogue (Rimi, Barbora/Maxima, Lidl, and top!; Lidl carries a small egg range, and etop.lv shows only TOP's own-brand eggs).{lidl_gap_en} The others:</p>
   {stubs_en}
 
   <h2>Limitations</h2>
   <ul>
     <li>Shelf presence by SKU count, not sales volume. A retailer with 90% cage-free SKUs could still sell many caged eggs if the cheap, high-volume lines are caged.</li>
+    {single_en}
     <li>The {NATIONAL_CF_PCT}% reference is production capacity (laying-hen places), not retail volume.</li>
     <li>Price is the listed price (may include promotions) divided by egg count; not weighted by sales volume.</li>
   </ul>
