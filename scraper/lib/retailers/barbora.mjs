@@ -1,23 +1,24 @@
 // Barbora Latvia scraper (barbora.lv, Maxima Group's online grocery). The eggs
-// category is publicly accessible and server-rendered: the product objects are
-// embedded in a `window.b_productList = [ ... ]` JSON array. Each object has
-// `title`, `units[].price` and a category path. The production system is in the
-// title (kūtī dētas / brīvi turētu / bio / eko). We parse the JSON array.
+// category is publicly accessible and server-rendered. Since the 2026-10-28 site
+// relaunch (Remix app, category URLs under /c/<shortId>/...) the product objects
+// sit in the `window.__remixContext = { ... }` JSON, in a React Query cache entry
+// whose data has an `inventories` array. Each object has `id`, `title`, `price`
+// and `categoryPathUrl`. The production system is in the title (kūtī dētas /
+// brīvi turētu / bio / eko). Before the relaunch the same objects were in a
+// `window.b_productList = [ ... ]` array (versions/barbora_20261102v1.mjs).
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36";
 const CATEGORIES = [
-  "https://barbora.lv/piena-produkti-un-olas/olas",            // parent eggs category (complete)
-  "https://barbora.lv/piena-produkti-un-olas/olas/vistu-olas", // chicken eggs subcategory (belt and braces)
+  "https://barbora.lv/c/ATPC/piena-produkti-un-olas/olas",            // parent eggs category (complete)
+  "https://barbora.lv/c/ZEX6/piena-produkti-un-olas/olas/vistu-olas", // chicken eggs subcategory (belt and braces)
 ];
+const MARKER = "window.__remixContext = ";
 
-function extractProductList(html) {
-  const key = "window.b_productList = ";
-  const i = html.indexOf(key);
-  if (i < 0) return [];
-  const start = html.indexOf("[", i);
-  if (start < 0) return [];
-  // String-aware bracket scan: only count [ ] that are OUTSIDE JSON string
-  // literals, so a stray bracket inside a product title cannot truncate the array.
+// String-aware bracket scan from html[start] (an opening bracket): only count
+// brackets OUTSIDE JSON string literals, so a stray bracket inside a product
+// title cannot truncate the value. Returns the index just past the match.
+function scanJsonEnd(html, start) {
+  const open = html[start], close = open === "{" ? "}" : "]";
   let depth = 0, inStr = false, esc = false, j = start;
   for (; j < html.length; j++) {
     const c = html[j];
@@ -28,13 +29,36 @@ function extractProductList(html) {
       continue;
     }
     if (c === '"') inStr = true;
-    else if (c === "[") depth++;
-    else if (c === "]") { depth--; if (depth === 0) { j++; break; } }
+    else if (c === open) depth++;
+    else if (c === close) { depth--; if (depth === 0) return j + 1; }
   }
-  try { return JSON.parse(html.slice(start, j)); } catch (e) {
-    console.error(`  Barbora: product-list JSON parse failed (${e.message})`);
+  return j;
+}
+
+function extractProductList(html) {
+  const i = html.indexOf(MARKER);
+  if (i < 0) return [];
+  const start = html.indexOf("{", i);
+  if (start < 0) return [];
+  let ctx;
+  try { ctx = JSON.parse(html.slice(start, scanJsonEnd(html, start))); } catch (e) {
+    console.error(`  Barbora: page-data JSON parse failed (${e.message})`);
     return [];
   }
+  // Take the inventories from every route's query cache rather than one named
+  // route, so a renamed route file does not break the scrape.
+  const out = [];
+  for (const route of Object.values(ctx?.state?.loaderData || {})) {
+    for (const q of route?.dehydratedState?.queries || []) {
+      const d = q?.state?.data;
+      if (!Array.isArray(d?.inventories)) continue;
+      if (typeof d.count === "number" && d.count > d.inventories.length) {
+        console.error(`  Barbora: page lists ${d.inventories.length} of ${d.count} products (pagination not handled)`);
+      }
+      out.push(...d.inventories);
+    }
+  }
+  return out;
 }
 
 // One-line description of a response that yielded no products, so a red CI run
@@ -46,7 +70,7 @@ function describe(url, status, html, headers) {
   const slug = url.replace("https://barbora.lv/", "");
   if (html == null) return typeof status === "number" ? `${slug}: HTTP ${status}` : `${slug}: ${status}`;
   const t = html.match(/<title>([^<]{0,80})/i);
-  const marker = html.includes("window.b_productList = ") ? "marker present" : "no b_productList marker";
+  const marker = html.includes(MARKER) ? "marker present" : "no __remixContext marker";
   const cf = headers
     ? ["server", "cf-mitigated", "cf-ray"].filter(h => headers.get(h)).map(h => `${h}=${headers.get(h)}`).join(" ")
     : "";
@@ -92,7 +116,7 @@ export async function scrape({ waits = [15_000, 45_000] } = {}) {
       const id = p.id || p.title;
       if (!p.title || seen.has(id)) continue;
       seen.add(id);
-      const price = p.units && p.units[0] && p.units[0].price;
+      const price = p.price;
       out.push({
         retailer: "Barbora",
         source: "barbora_html",
@@ -101,7 +125,7 @@ export async function scrape({ waits = [15_000, 45_000] } = {}) {
         name: p.title,
         price_text: price != null ? `${price} EUR` : "",
         unit_price: null,
-        category_path: p.category_path_url || "",
+        category_path: (p.categoryPathUrl || "").replace(/^c\/[^/]+\//, ""),
         tipo_produccion: "",
       });
     }
