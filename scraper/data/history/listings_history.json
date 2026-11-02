@@ -19252,13 +19252,13 @@
   {
     "date": "2026-08-29",
     "retailer": "Lidl",
-    "name": "BALTICOVO Kūtī dētas olas, 1 gab.",
+    "name": "BALTICOVO Kūtī dētas olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.79,
-    "pack_count": 1,
-    "price_per_egg": 1.79
+    "pack_count": 10,
+    "price_per_egg": 0.179
   },
   {
     "date": "2026-08-29",
@@ -19560,13 +19560,13 @@
   {
     "date": "2026-08-30",
     "retailer": "Lidl",
-    "name": "BALTICOVO Kūtī dētas olas, 1 gab.",
+    "name": "BALTICOVO Kūtī dētas olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.79,
-    "pack_count": 1,
-    "price_per_egg": 1.79
+    "pack_count": 10,
+    "price_per_egg": 0.179
   },
   {
     "date": "2026-08-30",
@@ -19868,13 +19868,13 @@
   {
     "date": "2026-08-31",
     "retailer": "Lidl",
-    "name": "BALTICOVO Kūtī dētas olas, 1 gab.",
+    "name": "BALTICOVO Kūtī dētas olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.79,
-    "pack_count": 1,
-    "price_per_egg": 1.79
+    "pack_count": 10,
+    "price_per_egg": 0.179
   },
   {
     "date": "2026-08-31",
@@ -20165,13 +20165,13 @@
   {
     "date": "2026-09-01",
     "retailer": "Lidl",
-    "name": "BALTICOVO Kūtī dētas olas, 1 gab.",
+    "name": "BALTICOVO Kūtī dētas olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.69,
-    "pack_count": 1,
-    "price_per_egg": 1.69
+    "pack_count": 10,
+    "price_per_egg": 0.169
   },
   {
     "date": "2026-09-01",
@@ -20462,13 +20462,13 @@
   {
     "date": "2026-09-02",
     "retailer": "Lidl",
-    "name": "BALTICOVO Kūtī dētas olas, 1 gab.",
+    "name": "BALTICOVO Kūtī dētas olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.69,
-    "pack_count": 1,
-    "price_per_egg": 1.69
+    "pack_count": 10,
+    "price_per_egg": 0.169
   },
   {
     "date": "2026-09-02",
@@ -20759,13 +20759,13 @@
   {
     "date": "2026-09-03",
     "retailer": "Lidl",
-    "name": "BALTICOVO Kūtī dētas olas, 1 gab.",
+    "name": "BALTICOVO Kūtī dētas olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.69,
-    "pack_count": 1,
-    "price_per_egg": 1.69
+    "pack_count": 10,
+    "price_per_egg": 0.169
   },
   {
     "date": "2026-09-03",
@@ -21056,13 +21056,13 @@
   {
     "date": "2026-09-04",
     "retailer": "Lidl",
-    "name": "BALTICOVO Kūtī dētas olas, 1 gab.",
+    "name": "BALTICOVO Kūtī dētas olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.69,
-    "pack_count": 1,
-    "price_per_egg": 1.69
+    "pack_count": 10,
+    "price_per_egg": 0.169
   },
   {
     "date": "2026-09-04",
@@ -21353,13 +21353,13 @@
   {
     "date": "2026-09-05",
     "retailer": "Lidl",
-    "name": "BALTICOVO Kūtī dētas olas, 1 gab.",
+    "name": "BALTICOVO Kūtī dētas olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.69,
-    "pack_count": 1,
-    "price_per_egg": 1.69
+    "pack_count": 10,
+    "price_per_egg": 0.169
   },
   {
     "date": "2026-09-05",
@@ -21650,13 +21650,13 @@
   {
     "date": "2026-09-06",
     "retailer": "Lidl",
-    "name": "BALTICOVO Kūtī dētas olas, 1 gab.",
+    "name": "BALTICOVO Kūtī dētas olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.69,
-    "pack_count": 1,
-    "price_per_egg": 1.69
+    "pack_count": 10,
+    "price_per_egg": 0.169
   },
   {
     "date": "2026-09-06",
@@ -34135,13 +34135,13 @@
   {
     "date": "2026-10-17",
     "retailer": "Lidl",
-    "name": "Kūtī dētas vistu olas, 1 gab.",
+    "name": "Kūtī dētas vistu olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.59,
-    "pack_count": 1,
-    "price_per_egg": 1.59
+    "pack_count": 10,
+    "price_per_egg": 0.159
   },
   {
     "date": "2026-10-17",
@@ -34454,13 +34454,13 @@
   {
     "date": "2026-10-18",
     "retailer": "Lidl",
-    "name": "Kūtī dētas vistu olas, 1 gab.",
+    "name": "Kūtī dētas vistu olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.59,
-    "pack_count": 1,
-    "price_per_egg": 1.59
+    "pack_count": 10,
+    "price_per_egg": 0.159
   },
   {
     "date": "2026-10-18",
@@ -34784,13 +34784,13 @@
   {
     "date": "2026-10-19",
     "retailer": "Lidl",
-    "name": "Kūtī dētas vistu olas, 1 gab.",
+    "name": "Kūtī dētas vistu olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.59,
-    "pack_count": 1,
-    "price_per_egg": 1.59
+    "pack_count": 10,
+    "price_per_egg": 0.159
   },
   {
     "date": "2026-10-19",
@@ -35103,13 +35103,13 @@
   {
     "date": "2026-10-20",
     "retailer": "Lidl",
-    "name": "Kūtī dētas vistu olas, 1 gab.",
+    "name": "Kūtī dētas vistu olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.59,
-    "pack_count": 1,
-    "price_per_egg": 1.59
+    "pack_count": 10,
+    "price_per_egg": 0.159
   },
   {
     "date": "2026-10-20",
@@ -35422,13 +35422,13 @@
   {
     "date": "2026-10-21",
     "retailer": "Lidl",
-    "name": "Kūtī dētas vistu olas, 1 gab.",
+    "name": "Kūtī dētas vistu olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.59,
-    "pack_count": 1,
-    "price_per_egg": 1.59
+    "pack_count": 10,
+    "price_per_egg": 0.159
   },
   {
     "date": "2026-10-21",
@@ -35741,13 +35741,13 @@
   {
     "date": "2026-10-22",
     "retailer": "Lidl",
-    "name": "Kūtī dētas vistu olas, 1 gab.",
+    "name": "Kūtī dētas vistu olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.59,
-    "pack_count": 1,
-    "price_per_egg": 1.59
+    "pack_count": 10,
+    "price_per_egg": 0.159
   },
   {
     "date": "2026-10-22",
@@ -36049,13 +36049,13 @@
   {
     "date": "2026-10-23",
     "retailer": "Lidl",
-    "name": "Kūtī dētas vistu olas, 1 gab.",
+    "name": "Kūtī dētas vistu olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.59,
-    "pack_count": 1,
-    "price_per_egg": 1.59
+    "pack_count": 10,
+    "price_per_egg": 0.159
   },
   {
     "date": "2026-10-23",
@@ -36368,13 +36368,13 @@
   {
     "date": "2026-10-24",
     "retailer": "Lidl",
-    "name": "Kūtī dētas vistu olas, 1 gab.",
+    "name": "Kūtī dētas vistu olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.59,
-    "pack_count": 1,
-    "price_per_egg": 1.59
+    "pack_count": 10,
+    "price_per_egg": 0.159
   },
   {
     "date": "2026-10-24",
@@ -36687,13 +36687,13 @@
   {
     "date": "2026-10-25",
     "retailer": "Lidl",
-    "name": "Kūtī dētas vistu olas, 1 gab.",
+    "name": "Kūtī dētas vistu olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.59,
-    "pack_count": 1,
-    "price_per_egg": 1.59
+    "pack_count": 10,
+    "price_per_egg": 0.159
   },
   {
     "date": "2026-10-25",
@@ -37622,13 +37622,13 @@
   {
     "date": "2026-11-02",
     "retailer": "Lidl",
-    "name": "Kūtī dētas vistu olas, 1 gab.",
+    "name": "Kūtī dētas vistu olas, 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
     "cage_free": true,
     "price_eur": 1.69,
-    "pack_count": 1,
-    "price_per_egg": 1.69
+    "pack_count": 10,
+    "price_per_egg": 0.169
   },
   {
     "date": "2026-11-02",

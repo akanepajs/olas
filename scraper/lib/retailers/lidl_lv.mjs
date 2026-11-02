@@ -58,16 +58,38 @@ export async function scrape() {
     if (!path.startsWith("/p/") || seen.has(path)) continue;
     seen.add(path);
 
-    let price = null, baseText = "";
+    let price = null, baseText = "", packText = "";
     const pd = g.price;
     if (pd && typeof pd === "object") {
       if (typeof pd.price === "number") price = pd.price;
       if (pd.basePrice && typeof pd.basePrice === "object") baseText = String(pd.basePrice.text || "");
+      if (pd.packaging && typeof pd.packaging === "object") packText = String(pd.packaging.text || "");
     }
-    // Pack size ("10 gab.") lives in the price subtext, not the title; fold it into
-    // the name so the runner's packCount() can derive the per-egg price.
-    const pm = baseText.match(/(\d+)\s*gab/i);
-    const pack = pm ? Number(pm[1]) : null;
+    // Pack size ("10 gab.") is not in the title; fold it into the name so the
+    // runner's packCount() can derive the per-egg price. It used to be the whole
+    // basePrice text. Since ~2026-08-29 (on some days) basePrice is the unit price
+    // instead ("1 gab. = 0,17 €") and the pack size is in price.packaging.text;
+    // reading the "1" from basePrice made the per-egg price equal the pack price.
+    // So: packaging first, then the key-facts list, then basePrice only when it
+    // is not a "1 gab. = ..." unit-price line.
+    const keyfacts = String((g.keyfacts && g.keyfacts.description) || "").replace(/<[^>]+>/g, " ");
+    const isUnitPrice = /=/.test(baseText);
+    let pack = null;
+    for (const t of [packText, keyfacts, isUnitPrice ? "" : baseText]) {
+      const pm = t.match(/(\d+)\s*gab/i);
+      if (pm) { pack = Number(pm[1]); break; }
+    }
+    // Cross-check against the unit price when Lidl gives one: pack x unit price
+    // should be within a few cents of the pack price.
+    const um = isUnitPrice && baseText.match(/=\s*(\d+(?:[.,]\d+)?)/);
+    if (um && price != null) {
+      const unit = Number(um[1].replace(",", "."));
+      const implied = unit > 0 ? Math.round(price / unit) : null;
+      if (pack == null) pack = implied;
+      else if (implied && Math.abs(implied - pack) > 1) {
+        console.error(`  Lidl: pack size ${pack} disagrees with unit price (${baseText}, implies ${implied}) for "${title}"`);
+      }
+    }
     const name = (pack && !/gab/i.test(title)) ? `${title}, ${pack} gab.` : title;
     const id = path.split("/").pop().replace(/^p/, "");
 
