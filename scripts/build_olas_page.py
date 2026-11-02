@@ -111,6 +111,52 @@ def fmt_eur(v):
     return f"{v:.2f}" if v is not None else "-"
 
 
+TYPE_LV = {0: "bioloģiskās", 1: "brīvās turēšanas", 2: "kūtī dētas", 3: "sprostos dētas"}
+TYPE_EN = {0: "organic", 1: "free-range", 2: "barn", 3: "caged"}
+
+
+def price_sentences(listings):
+    # Price ranking computed from the day's listings (the plotted retailers only),
+    # replacing a hardcoded "organic dearest, Lidl cheapest" line that was false on
+    # 2026-11-02: the lone organic SKU (0.34) was below two free-range ones (0.40).
+    rows = [r for r in listings
+            if r.get("retailer") in RETAILER_ORDER and r.get("is_shell_egg")
+            and r.get("price_per_egg") is not None and r.get("eu_code") in TYPE_LV]
+    if not rows:
+        return "", ""
+
+    def extreme(fn):
+        v = fn(r["price_per_egg"] for r in rows)
+        keys = []
+        for r in rows:
+            k = (r["retailer"], r["eu_code"])
+            if r["price_per_egg"] == v and k not in keys:
+                keys.append(k)
+        return v, keys
+
+    hi, hi_keys = extreme(max)
+    lo, lo_keys = extreme(min)
+    hi_lv = " un ".join(f"{r} {TYPE_LV[c]} olas" for r, c in hi_keys)
+    lo_lv = " un ".join(f"{r} {TYPE_LV[c]} olas" for r, c in lo_keys)
+    hi_en = " and ".join(f"{r}'s {TYPE_EN[c]} eggs" for r, c in hi_keys)
+    lo_en = " and ".join(f"{r}'s {TYPE_EN[c]} eggs" for r, c in lo_keys)
+
+    by_type = []
+    for c in sorted(TYPE_LV):
+        p = sorted(r["price_per_egg"] for r in rows if r["eu_code"] == c)
+        if p:
+            k = len(p) // 2
+            by_type.append((c, p[k] if len(p) % 2 else (p[k - 1] + p[k]) / 2, len(p)))
+    types_lv = ", ".join(f"{TYPE_LV[c]} {fmt_eur(m)} (n={n})" for c, m, n in by_type)
+    types_en = ", ".join(f"{TYPE_EN[c]} {fmt_eur(m)} (n={n})" for c, m, n in by_type)
+
+    lv = (f"Dārgākās ir {hi_lv} ({fmt_eur(hi)} €/olu); lētākās ir {lo_lv} ({fmt_eur(lo)} €/olu). "
+          f"Mediānā pēc turēšanas veida (€/olu): {types_lv}.")
+    en = (f"The dearest are {hi_en} ({fmt_eur(hi)} EUR/egg); the cheapest are {lo_en} ({fmt_eur(lo)} EUR/egg). "
+          f"Median by production type (EUR/egg): {types_en}.")
+    return lv, en
+
+
 def table_html(rows, lang):
     head_lv = ["Tirgotājs", "SKU (n)", "Bioloģiskās", "Brīvās", "Kūtī", "Sprostos", "Bezsprostu %", "Mediānā €/olu"]
     head_en = ["Retailer", "SKUs (n)", "Organic", "Free-range", "Barn", "Caged", "Cage-free %", "Median €/egg"]
@@ -222,10 +268,8 @@ def build(tag, olas_dir):
     med_list_lv = ", ".join(f"{k} {fmt_eur(v)} €/olu" for k, v in med_items if v is not None)
     med_list_en = ", ".join(f"{k} {fmt_eur(v)} EUR/egg" for k, v in med_items if v is not None)
     lidl_live = (lk.get("Lidl", {}).get("shell_egg_listings") or 0) > 0
-    cheap_lv = ("Bioloģiskās olas ir dārgākās; lētākās ir Lidl kūtī dētas olas."
-                if lidl_live else "Bioloģiskās olas ir dārgākās.")
-    cheap_en = ("Organic eggs are the dearest; Lidl's barn eggs are the cheapest overall."
-                if lidl_live else "Organic eggs are the dearest.")
+    listings = json.loads((root / "scraper" / "data" / "raw" / f"{tag}_listings.json").read_text(encoding="utf-8"))
+    cheap_lv, cheap_en = price_sentences(listings)
     lidl_gap_lv = "" if lidl_live else " Lidl tiešsaistes katalogā šobrīd olu pozīciju nav."
     lidl_gap_en = "" if lidl_live else " Lidl's online catalogue currently lists no egg products."
 
@@ -251,7 +295,7 @@ def build(tag, olas_dir):
   {table_lv}
 
   <h2>Cena par olu</h2>
-  <p>Cena par olu (pakas cena dalīta ar olu skaitu pakā, lai 6 un 10 olu iepakojumi būtu salīdzināmi). {cheap_lv} Mediānā: {med_list_lv}.</p>
+  <p>Cena par olu (pakas cena dalīta ar olu skaitu pakā, lai 6 un 10 olu iepakojumi būtu salīdzināmi). {cheap_lv} Mediānā pa tirgotājiem: {med_list_lv}.</p>
   <figure>
     <img alt="Olu cena pēc tirgotāja un turēšanas veida" src="data:image/png;base64,{b64_price_lv}">
     <figcaption>Katrs punkts ir viens produkts; krāsa = turēšanas veids (tāda pati kā augšējā attēlā). Pelēkā svītra: tirgotāja mediāna.</figcaption>
@@ -301,7 +345,7 @@ def build(tag, olas_dir):
   {table_en}
 
   <h2>Price per egg</h2>
-  <p>Price per egg (pack price divided by the number of eggs per pack, so 6- and 10-egg packs compare fairly). {cheap_en} Medians: {med_list_en}.</p>
+  <p>Price per egg (pack price divided by the number of eggs per pack, so 6- and 10-egg packs compare fairly). {cheap_en} Medians by retailer: {med_list_en}.</p>
   <figure>
     <img alt="Egg price by retailer and production system" src="data:image/png;base64,{b64_price_en}">
     <figcaption>Each point is one product; color = production system (same as the chart above). Grey dash: retailer median.</figcaption>
