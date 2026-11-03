@@ -42,6 +42,10 @@ NATIONAL_CF_PCT = 47           # Latvia cage-free production capacity, 2026 (Egl
 # Retailers the scraper reads; a zero-listing row for one of these is a data
 # gap in an existing catalogue, not a missing catalogue.
 SCRAPED = {"Rimi", "Barbora", "Lidl", "top!"}
+# Chains with an egg page whose items cannot be classified (Elvi: one expired
+# promo item with no housing type), so "no catalogue" would contradict the
+# page's Coverage note.
+UNCLASSIFIABLE = {"Elvi"}
 
 # All user-facing figure text, per language. The figures are outward-facing
 # under Art's name, so no em dashes here (the middle dot separates title parts).
@@ -52,6 +56,7 @@ STR = {
         "mix_xlabel":   "Olas pēc vistu turēšanas veida, īpatsvars (%)",
         "no_catalogue": "nav tiešsaistes olu kataloga",
         "no_eggs_now":  "tiešsaistes katalogā šobrīd nav olu",
+        "unclassifiable": "nav klasificējamu olu pozīciju",
         "ref_line":     "valsts ražošana\n~{n}% bezsprostu",
         "cf":           "  bezsprostu {strict}%",
         "cf_anchor":    "  bezsprostu {strict}% (korekcija {anchor}%)",
@@ -67,6 +72,7 @@ STR = {
         "mix_xlabel":   "Share of chicken shell-egg listings (%)",
         "no_catalogue": "no online egg catalogue",
         "no_eggs_now":  "no eggs in the online catalogue at present",
+        "unclassifiable": "no classifiable egg listings",
         "ref_line":     "national production\n~{n}% cage-free",
         "cf":           "  cage-free {strict}%",
         "cf_anchor":    "  cage-free {strict}% (anchor {anchor}%)",
@@ -109,7 +115,9 @@ def make_figure(summary_rows: list[dict], out: Path, tag: str, lang: str) -> Non
             # No data: light grey full-width hatch + label. A scraped retailer
             # whose catalogue currently has no eggs (Lidl since the 2026-07
             # relaunch) gets a distinct label from chains with no catalogue.
-            label = s["no_eggs_now"] if r["retailer"] in SCRAPED else s["no_catalogue"]
+            label = (s["no_eggs_now"] if r["retailer"] in SCRAPED
+                     else s["unclassifiable"] if r["retailer"] in UNCLASSIFIABLE
+                     else s["no_catalogue"])
             ax.barh(yi, 100, color="#f2f2f0", edgecolor="#dddddd", linewidth=0.6)
             ax.text(50, yi, label, ha="center", va="center",
                     fontsize=8.5, color="#999999", style="italic")
