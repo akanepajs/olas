@@ -273,11 +273,13 @@ def build(tag, olas_dir):
     med_items = [(k, lk.get(k, {}).get("median_price_per_egg")) for k in RETAILER_ORDER]
     med_list_lv = ", ".join(f"{k} {fmt_eur(v)} €/olu" for k, v in med_items if v is not None)
     med_list_en = ", ".join(f"{k} {fmt_eur(v)} EUR/egg" for k, v in med_items if v is not None)
-    lidl_live = (lk.get("Lidl", {}).get("shell_egg_listings") or 0) > 0
+    # Any scraped retailer with no listings today (Lidl in 2026-07, possibly top!
+    # later) stays in the coverage sentence, so the gap is said in one line.
+    gapped = [k for k in ("Lidl", "top!") if (lk.get(k, {}).get("shell_egg_listings") or 0) == 0]
     listings = json.loads((root / "scraper" / "data" / "raw" / f"{tag}_listings.json").read_text(encoding="utf-8"))
     cheap_lv, cheap_en = price_sentences(listings)
-    lidl_gap_lv = "" if lidl_live else " Lidl tiešsaistes katalogā šobrīd olu pozīciju nav."
-    lidl_gap_en = "" if lidl_live else " Lidl's online catalogue currently lists no egg products."
+    lidl_gap_lv = "".join(f" {k} tiešsaistes katalogā šobrīd olu pozīciju nav." for k in gapped)
+    lidl_gap_en = "".join(f" {k}'s online catalogue currently lists no egg products." for k in gapped)
 
     table_lv, table_en = table_html(lrows, "lv"), table_html(lrows, "en")
     stubs_lv, stubs_en = stub_list_html(srows, "lv"), stub_list_html(srows, "en")
