@@ -93,3 +93,11 @@ jobs:
       - name: Deploy to Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      # Publish the English page to eggs.kanepajs.eu (repo akanepajs/eggs) at the
+      # commit just pushed. Needs the EGGS_DISPATCH_TOKEN secret (fine-grained PAT,
+      # akanepajs/eggs only, Actions: read and write); an expired token fails here.
+      - name: Mirror English page to eggs.kanepajs.eu
+        env:
+          GH_TOKEN: ${{ secrets.EGGS_DISPATCH_TOKEN }}
+        run: gh workflow run sync-en.yml -R akanepajs/eggs -f ref="$(git rev-parse HEAD)"

@@ -33,3 +33,8 @@ jobs:
           path: '.'
       - id: deployment
         uses: actions/deploy-pages@v4
+      # Mirror index_en.html to eggs.kanepajs.eu; see daily-scrape.yml.
+      - name: Mirror English page to eggs.kanepajs.eu
+        env:
+          GH_TOKEN: ${{ secrets.EGGS_DISPATCH_TOKEN }}
+        run: gh workflow run sync-en.yml -R akanepajs/eggs -f ref="${{ github.sha }}"
