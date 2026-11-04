@@ -155,6 +155,27 @@ def price_sentences(listings):
     return lv, en
 
 
+def pack_phrases(listings):
+    # Pack sizes named in the price-per-egg sentence come from the day's plotted
+    # listings, replacing a hardcoded "6- and 10-egg packs" that was false from
+    # 2026-Q3 on (Q4 data: 10-, 12-, and 15-packs; nightly audit V2, 2026-11-04).
+    sizes = sorted({int(r["pack_count"]) for r in listings
+                    if r.get("retailer") in RETAILER_ORDER and r.get("is_shell_egg")
+                    and r.get("price_per_egg") is not None and r.get("pack_count")})
+    if not sizes:
+        return ("pakas cena dalīta ar olu skaitu pakā",
+                "pack price divided by the number of eggs per pack")
+    if len(sizes) == 1:
+        return (f"pakas cena dalīta ar olu skaitu pakā; visās pozīcijās ir {sizes[0]} olas",
+                f"pack price divided by the number of eggs per pack; every listing is a {sizes[0]}-egg pack")
+    s = [str(n) for n in sizes]
+    lv_sizes = ", ".join(s[:-1]) + " un " + s[-1]
+    en_sizes = (" and ".join(f"{n}-" for n in s) if len(s) == 2
+                else ", ".join(f"{n}-" for n in s[:-1]) + f", and {s[-1]}-")
+    return (f"pakas cena dalīta ar olu skaitu pakā, lai {lv_sizes} olu iepakojumi būtu salīdzināmi",
+            f"pack price divided by the number of eggs per pack, so {en_sizes}egg packs compare fairly")
+
+
 def table_html(rows, lang):
     head_lv = ["Tirgotājs", "SKU (n)", "Bioloģiskās", "Brīvās", "Kūtī", "Sprostos", "Bezsprostu %", "Mediānā €/olu"]
     head_en = ["Retailer", "SKUs (n)", "Organic", "Free-range", "Barn", "Caged", "Cage-free %", "Median €/egg"]
@@ -197,6 +218,16 @@ def source_links_li(lang):
     return f"<li>{label}: {links}.</li>"
 
 
+def history_cf(d):
+    strict, anchor = d["cage_free_share_strict_pct"], d.get("cage_free_share_anchor_pct")
+    return f"{strict}%" if anchor is None or anchor == strict else f"{strict}% ({anchor}%)"
+
+
+def history_has_unlabelled(history, retailers):
+    return any("(" in history_cf(d) for h in history
+               for r, d in h.get("retailers", {}).items() if r in retailers and d)
+
+
 def history_table_html(history, retailers, lang):
     date_h = "Datums" if lang == "lv" else "Date"
     sub = (["n", "Bezspr. %", "€/olu"] if lang == "lv" else ["n", "Cage-free %", "€/egg"])
@@ -208,7 +239,12 @@ def history_table_html(history, retailers, lang):
         for r in retailers:
             d = rec.get("retailers", {}).get(r)
             if d:
-                cells.append(f"<td>{d['n']}</td><td>{d['cage_free_share_strict_pct']}%</td><td>{fmt_eur(d.get('median_price_per_egg'))}</td>")
+                # Same convention as the main table: when unlabelled SKUs make the
+                # strict and anchor shares differ, show "strict% (anchor%)", so a
+                # day whose only SKU was unlabelled no longer reads as all caged
+                # (Lidl 2026-09-12 to 09-20; nightly audit V1, 2026-11-04).
+                cf = history_cf(d)
+                cells.append(f"<td>{d['n']}</td><td>{cf}</td><td>{fmt_eur(d.get('median_price_per_egg'))}</td>")
             else:
                 cells.append("<td>-</td><td>-</td><td>-</td>")
         rows_html.append("<tr>" + "".join(cells) + "</tr>")
@@ -278,6 +314,7 @@ def build(tag, olas_dir):
     gapped = [k for k in ("Lidl", "top!") if (lk.get(k, {}).get("shell_egg_listings") or 0) == 0]
     listings = json.loads((root / "scraper" / "data" / "raw" / f"{tag}_listings.json").read_text(encoding="utf-8"))
     cheap_lv, cheap_en = price_sentences(listings)
+    pack_lv, pack_en = pack_phrases(listings)
     lidl_gap_lv = "".join(f" {k} tiešsaistes katalogā šobrīd olu pozīciju nav." for k in gapped)
     lidl_gap_en = "".join(f" {k}'s online catalogue currently lists no egg products." for k in gapped)
 
@@ -286,6 +323,9 @@ def build(tag, olas_dir):
     hist_retailers = [r for r in RETAILER_ORDER if any(r in h.get("retailers", {}) for h in history)]
     hist_lv = history_table_html(history, hist_retailers, "lv")
     hist_en = history_table_html(history, hist_retailers, "en")
+    hist_note = history_has_unlabelled(history, hist_retailers)
+    hist_note_lv = (f" Ja daļai pozīciju nebija ražošanas marķējuma, iekavās ir īpatsvars, kurā šīs pozīcijas pieskaitītas ar valsts bezsprostu īpatsvaru ({NATIONAL_CF_PCT}%); skaitlī bez iekavām tās netiek skaitītas kā bezsprostu." if hist_note else "")
+    hist_note_en = (f" Where some listings had no production label, the figure in brackets counts them at the national cage-free share ({NATIONAL_CF_PCT}%); the figure outside the brackets does not count them as cage-free." if hist_note else "")
     src_lv, src_en = source_links_li("lv"), source_links_li("en")
 
     body_lv = f"""  <h1>Bezsprostu olu īpatsvars Latvijas mazumtirgotāju sortimentā</h1>
@@ -303,7 +343,7 @@ def build(tag, olas_dir):
   {table_lv}
 
   <h2>Cena par olu</h2>
-  <p>Cena par olu (pakas cena dalīta ar olu skaitu pakā, lai 6 un 10 olu iepakojumi būtu salīdzināmi). {cheap_lv} Mediānā pa tirgotājiem: {med_list_lv}.</p>
+  <p>Cena par olu ({pack_lv}). {cheap_lv} Mediānā pa tirgotājiem: {med_list_lv}.</p>
   <figure>
     <img alt="Olu cena pēc tirgotāja un turēšanas veida" src="data:image/png;base64,{b64_price_lv}">
     <figcaption>Katrs punkts ir viens produkts; krāsa = turēšanas veids (tāda pati kā augšējā attēlā). Pelēkā svītra: tirgotāja mediāna.</figcaption>
@@ -333,7 +373,7 @@ def build(tag, olas_dir):
   </ul>
 
   <h2>Vēsture</h2>
-  <p>Datu kopa tiek automātiski atjaunināta katru dienu. Tabulā zemāk ir kopsavilkums (bezsprostu % un mediānā cena par olu katram datumam). Pilnie produktu līmeņa dati par katru momentuzņēmumu (veikals, cena, olu veids katrai pozīcijai) ir lejupielādējami <a href="{DATA_HISTORY_URL}">kā JSON GitHub vietnē</a>.</p>
+  <p>Datu kopa tiek automātiski atjaunināta katru dienu. Tabulā zemāk ir kopsavilkums (bezsprostu % un mediānā cena par olu katram datumam).{hist_note_lv} Pilnie produktu līmeņa dati par katru momentuzņēmumu (veikals, cena, olu veids katrai pozīcijai) ir lejupielādējami <a href="{DATA_HISTORY_URL}">kā JSON GitHub vietnē</a>.</p>
   {hist_lv}
 
   <div class="disclosure">Analīzei un teksta sagatavošanai izmantots Claude Code.</div>
@@ -354,7 +394,7 @@ def build(tag, olas_dir):
   {table_en}
 
   <h2>Price per egg</h2>
-  <p>Price per egg (pack price divided by the number of eggs per pack, so 6- and 10-egg packs compare fairly). {cheap_en} Medians by retailer: {med_list_en}.</p>
+  <p>Price per egg ({pack_en}). {cheap_en} Medians by retailer: {med_list_en}.</p>
   <figure>
     <img alt="Egg price by retailer and production system" src="data:image/png;base64,{b64_price_en}">
     <figcaption>Each point is one product; color = production system (same as the chart above). Grey dash: retailer median.</figcaption>
@@ -384,7 +424,7 @@ def build(tag, olas_dir):
   </ul>
 
   <h2>History</h2>
-  <p>The dataset is refreshed automatically each day. The table below is a summary (cage-free % and median price per egg for each date). The full product-level data behind every snapshot (shop, price, egg type for each listing) is downloadable as <a href="{DATA_HISTORY_URL}">JSON on GitHub</a>.</p>
+  <p>The dataset is refreshed automatically each day. The table below is a summary (cage-free % and median price per egg for each date).{hist_note_en} The full product-level data behind every snapshot (shop, price, egg type for each listing) is downloadable as <a href="{DATA_HISTORY_URL}">JSON on GitHub</a>.</p>
   {hist_en}
 
   <div class="disclosure">Claude Code used for analysis and drafting.</div>
