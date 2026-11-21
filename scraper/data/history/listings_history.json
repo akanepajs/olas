@@ -43562,17 +43562,6 @@
   {
     "date": "2026-11-21",
     "retailer": "Barbora",
-    "name": "Brīvi turētu vistu olas WELL DONE 10gab.",
-    "eu_code": 1,
-    "production_label": "free-range",
-    "cage_free": true,
-    "price_eur": 2.69,
-    "pack_count": 10,
-    "price_per_egg": 0.269
-  },
-  {
-    "date": "2026-11-21",
-    "retailer": "Barbora",
     "name": "Vistu olas WELL DONE Eco M 10gab.",
     "eu_code": 0,
     "production_label": "organic",
@@ -43694,17 +43683,6 @@
   {
     "date": "2026-11-21",
     "retailer": "Rimi",
-    "name": "Olas Sprīdīši A/ML Nr.1 10 gab.",
-    "eu_code": 1,
-    "production_label": "free-range",
-    "cage_free": true,
-    "price_eur": 3.99,
-    "pack_count": 10,
-    "price_per_egg": 0.399
-  },
-  {
-    "date": "2026-11-21",
-    "retailer": "Rimi",
     "name": "Olas Nordic Egg kūtī dētas A/LM Nr.2 10 gab.",
     "eu_code": 2,
     "production_label": "barn",
@@ -43712,6 +43690,17 @@
     "price_eur": 2.59,
     "pack_count": 10,
     "price_per_egg": 0.259
+  },
+  {
+    "date": "2026-11-21",
+    "retailer": "Rimi",
+    "name": "Olas Sprīdīši A/ML Nr.1 10 gab.",
+    "eu_code": 1,
+    "production_label": "free-range",
+    "cage_free": true,
+    "price_eur": 3.99,
+    "pack_count": 10,
+    "price_per_egg": 0.399
   },
   {
     "date": "2026-11-21",
