@@ -108,6 +108,7 @@ export async function scrape({ waits = [15_000, 45_000] } = {}) {
   const out = [];
   const seen = new Set();
   const failures = [];
+  let skipped = 0;
   for (const url of CATEGORIES) {
     const { products, tries } = await fetchProducts(url, waits);
     if (tries.length) console.log(`  Barbora: ${products.length ? "recovered after" : "gave up after"} ${tries.length} failed attempt(s): ${tries.join(" | ")}`);
@@ -115,6 +116,10 @@ export async function scrape({ waits = [15_000, 45_000] } = {}) {
     for (const p of products) {
       const id = p.id || p.title;
       if (!p.title || seen.has(id)) continue;
+      // Barbora keeps out-of-stock lines in the category with status "outOfStock"
+      // (2026-11-21: 5 of 8 shell-egg lines, incl. the 4 cheapest). They are not on
+      // the shelf, so they are not counted. A missing status is kept (unknown).
+      if (typeof p.status === "string" && p.status !== "active") { skipped++; continue; }
       seen.add(id);
       const price = p.price;
       out.push({
@@ -131,6 +136,7 @@ export async function scrape({ waits = [15_000, 45_000] } = {}) {
     }
     await new Promise(res => setTimeout(res, 300));
   }
+  if (skipped) console.log(`  Barbora: skipped ${skipped} product(s) not in stock`);
   if (out.length === 0) throw new Error(`Barbora: no products parsed after retries (${failures.join(" | ")})`);
   return out;
 }

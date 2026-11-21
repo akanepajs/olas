@@ -212,8 +212,11 @@ def stub_list_html(rows, lang):
     return "<ul>" + "".join(items) + "</ul>"
 
 
-def source_links_li(lang):
-    links = ", ".join(f'<a href="{url}">{name}</a>' for name, url in SOURCE_URLS.items())
+def source_links_li(lang, empty=()):
+    # A catalogue that returned no egg products today is named as such, not as a source of data.
+    links = ", ".join(
+        f'<a href="{url}">{name}</a>' + ((" (šobrīd bez olām)" if lang == "lv" else " (currently no eggs)") if name in empty else "")
+        for name, url in SOURCE_URLS.items())
     label = "Iegūtie tiešsaistes katalogi" if lang == "lv" else "Scraped online catalogues"
     return f"<li>{label}: {links}.</li>"
 
@@ -326,7 +329,18 @@ def build(tag, olas_dir):
     hist_note = history_has_unlabelled(history, hist_retailers)
     hist_note_lv = (f" Ja daļai pozīciju nebija ražošanas marķējuma, iekavās ir īpatsvars, kurā šīs pozīcijas pieskaitītas ar valsts bezsprostu īpatsvaru ({NATIONAL_CF_PCT}%); skaitlī bez iekavām tās netiek skaitītas kā bezsprostu." if hist_note else "")
     hist_note_en = (f" Where some listings had no production label, the figure in brackets counts them at the national cage-free share ({NATIONAL_CF_PCT}%); the figure outside the brackets does not count them as cage-free." if hist_note else "")
-    src_lv, src_en = source_links_li("lv"), source_links_li("en")
+    src_lv, src_en = source_links_li("lv", gapped), source_links_li("en", gapped)
+    # Coverage sentence counts only chains that currently list eggs online.
+    have = [k for k in RETAILER_ORDER if (lk.get(k, {}).get("shell_egg_listings") or 0) > 0]
+    have_lv = {1: "vienam", 2: "diviem", 3: "trim", 4: "četriem"}.get(len(have), str(len(have)))
+    have_en = {1: "one", 2: "two", 3: "three", 4: "four"}.get(len(have), str(len(have)))
+    names_lv = ", ".join("Barbora/Maxima" if k == "Barbora" else k for k in have[:-1]) + (" un " if len(have) > 1 else "") + ("Barbora/Maxima" if have[-1] == "Barbora" else have[-1])
+    names_en = ", ".join("Barbora/Maxima" if k == "Barbora" else k for k in have[:-1]) + (", and " if len(have) > 2 else (" and " if len(have) == 2 else "")) + ("Barbora/Maxima" if have[-1] == "Barbora" else have[-1])
+    top_lv = " top! vietne (etop.lv) rāda tikai TOP pašu zīmola preces." if "top!" in gapped else ""
+    top_en = " etop.lv shows only TOP's own-brand products." if "top!" in gapped else ""
+    lidl_note_lv = "; Lidl piedāvā nelielu olu sortimentu" if "Lidl" in have else ""
+    lidl_note_en = "; Lidl carries a small egg range" if "Lidl" in have else ""
+
 
     body_lv = f"""  <h1>Bezsprostu olu īpatsvars Latvijas mazumtirgotāju sortimentā</h1>
   <div class="subtitle">Tiešsaistes veikalu sortimenta uzskaite pēc SKU. Pēdējie dati: {data_date} (atjaunina katru dienu).</div>
@@ -353,7 +367,7 @@ def build(tag, olas_dir):
   <p>No katra tirgotāja tiešsaistes kataloga tika nolasītas visas vistu (čaumalas) olu pozīcijas un katra klasificēta pēc ES ražošanas koda (0 bioloģiskās, 1 brīvās turēšanas, 2 kūtī dētas, 3 sprostos), izmantojot olu marķējuma kodu (Nr.0/1/2/3) un/vai atslēgvārdus produkta nosaukumā (kūtī dētas, sprostos, brīvās turēšanas, eko/bio). Paipalu olas un olu produkti (olu baltums u.c.) izslēgti. <strong>Bezsprostu %</strong> = kodi 0/1/2 attiecībā pret visām vistu olu pozīcijām. Visām pozīcijām bija ražošanas marķējums (0 neklasificētu), tāpēc valsts īpatsvara korekcija rezultātu nemaina.</p>
 
   <h2>Sortimenta segums</h2>
-  <p>No sešiem lielajiem tīkliem četriem ir mašīnlasāms tiešsaistes olu katalogs (Rimi, Barbora/Maxima, Lidl un top!; Lidl piedāvā nelielu olu sortimentu, un top! vietne rāda tikai TOP pašu zīmola olas).{lidl_gap_lv} Pārējie:</p>
+  <p>No sešiem lielajiem tīkliem {have_lv} ir mašīnlasāms tiešsaistes olu katalogs ({names_lv}{lidl_note_lv}).{top_lv}{lidl_gap_lv} Pārējie:</p>
   {stubs_lv}
 
   <h2>Ierobežojumi</h2>
@@ -404,7 +418,7 @@ def build(tag, olas_dir):
   <p>Every chicken shell-egg listing in each retailer's online catalogue was read and classified by EU production code (0 organic, 1 free-range, 2 barn, 3 caged), using the egg-marking code in the name (Nr.0/1/2/3) and/or production keywords (kuti detas = barn, sprostos = caged, brivas turesanas = free-range, eko/bio = organic). Quail eggs and egg products (egg white, etc.) were excluded. <strong>Cage-free %</strong> = codes 0/1/2 over all chicken shell-egg listings. Every listing carried a production label (0 unknowns), so the national-anchor adjustment leaves the figure unchanged.</p>
 
   <h2>Coverage</h2>
-  <p>Of six large chains, four have a machine-readable online egg catalogue (Rimi, Barbora/Maxima, Lidl, and top!; Lidl carries a small egg range, and etop.lv shows only TOP's own-brand eggs).{lidl_gap_en} The others:</p>
+  <p>Of six large chains, {have_en} have a machine-readable online egg catalogue ({names_en}{lidl_note_en}).{top_en}{lidl_gap_en} The others:</p>
   {stubs_en}
 
   <h2>Limitations</h2>
