@@ -16,17 +16,17 @@
   },
   {
     "retailer": "Barbora",
-    "total_listings": 10,
-    "shell_egg_listings": 7,
+    "total_listings": 9,
+    "shell_egg_listings": 6,
     "organic": 1,
     "free_range": 1,
-    "barn": 5,
+    "barn": 4,
     "caged": 0,
     "unknown": 0,
-    "cage_free_listings": 7,
+    "cage_free_listings": 6,
     "cage_free_share_strict_pct": 100,
     "cage_free_share_anchor_pct": 100,
-    "median_price_per_egg": 0.269,
+    "median_price_per_egg": 0.262,
     "note": ""
   },
   {
