@@ -22,6 +22,14 @@
 // all (product sitemap has none; /h/olas/h10096079 renders "nekas netika
 // atrasts"), so until Lidl relists eggs online this scraper reaches the API
 // fine and then throws the "no egg products" error below by design.
+//
+// 2026-11-28: out of assortment online again, not a filter miss. The one egg
+// SKU ("Kuti detas vistu olas, 10 gab.", /p/kuti-detas-vistu-olas/p11314475,
+// EUR 1.59) was last scraped on 2026-11-22. Checked 2026-11-28: that product URL
+// returns HTTP 404 ("Lapa nav atrasta"); the API answers 200 but q=olas returns
+// 10 non-egg products (butter, milk, kiwi...), and q="vistu olas", "ola", "olu"
+// return no egg title either; https://www.lidl.lv/q/search?q=olas shows the same
+// 10 products. The page builder prints "Lidl ... currently lists no egg products".
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36";
 const API = "https://www.lidl.lv/q/api/search?q=olas&fetchsize=48&locale=lv_LV&assortment=LV&version=v2.1.0";

@@ -11,6 +11,15 @@
 // own-brand product (Art's decision, 2026-11-02). Like Lidl, top! is NOT in the
 // runner's fail-fast EXPECTED set, so a failure here leaves a gap instead of
 // freezing the whole site.
+//
+// 2026-11-28: out of assortment online, not an API change. The last top! row is
+// from 2026-11-04. Checked 2026-11-28: the API answers 200 with
+// {"list":[],"totalCount":0} for category 21; the whole unfiltered catalogue (174
+// products) holds no egg product and no 21.x category code; and the live page
+// https://etop.lv/lv/top-produkti/olas still shows the "Olas" tile but lists no
+// products. So the "no products" error below is the expected outcome until TOP
+// relists eggs; the page builder then prints "top! ... currently lists no egg
+// products" (gapped list in build_olas_page.py).
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36";
 const API = "https://etop.lv/v1/Products/GetTopProducts";
